@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.betarec.data.DbWriter">
+    <insert id="insertMovie" parameterType="com.betarec.pojo.Movie">
+        INSERT INTO MovieLens.movies (movieId, title, genres, year)
+        VALUES (#{movieId}, #{title}, #{genres}, #{year});
+    </insert>
+</mapper>
