@@ -8,4 +8,16 @@
         INSERT INTO MovieLens.movies (movieId, title, genres, year)
         VALUES (#{movieId}, #{title}, #{genres}, #{year});
     </insert>
+    <insert id="insertGenomeTag" parameterType="com.betarec.pojo.GenomeTag">
+        INSERT INTO MovieLens.genome_tags (tagId, tag)
+        VALUES (#{tagId}, #{tag});
+    </insert>
+    <insert id="insertGenomeScore" parameterType="com.betarec.pojo.GenomeScore">
+        INSERT INTO MovieLens.genome_scores (movieId, tagId, relevance)
+        VALUES (#{movieId}, #{tagId}, #{relevance});
+    </insert>
+    <insert id="insertLink" parameterType="com.betarec.pojo.Link">
+        INSERT INTO MovieLens.links (movieId, imdbId, tmdbId)
+        VALUES (#{movieId}, #{imdbId}, #{tmdbId});
+    </insert>
 </mapper>
