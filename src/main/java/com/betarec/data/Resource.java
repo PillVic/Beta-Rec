@@ -24,4 +24,5 @@ public class Resource {
         ApplicationContext context = new AnnotationConfigApplicationContext(JavaConfig.class);
         return context.getBean("resource", Resource.class);
     }
+
 }

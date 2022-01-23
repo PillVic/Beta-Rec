@@ -26,10 +26,12 @@ public class ParseFile {
             pool.submit(() -> {
                 try {
                     String line = null;
+                    int produceNum = 0;
                     while ((line = br.readLine()) != null) {
-                        logger.info("produce line:{}", line);
                         queue.put(line);
+                        produceNum++;
                     }
+                    logger.info("produceNum {}", produceNum);
                     shutdown.set(true);
                 } catch (Exception e) {
                     logger.error("parse produce error", e);
@@ -38,14 +40,17 @@ public class ParseFile {
             pool.submit(() -> {
                 try {
                     logger.info("start consume:{}", queue.take());
+                    int consumeNum = 0;
                     while (!shutdown.get() || !queue.isEmpty()) {
                         int queueSize = queue.size();
                         for (int i = 0; i < queueSize; i++) {
                             String line = queue.take();
-                            logger.info("consume line:{}", line);
                             consumer.accept(line);
+                            consumeNum++;
                         }
+                        logger.info("queueSize:{}, consumeNum:{}", queueSize, consumeNum);
                     }
+                    logger.info("consumeNum {}", consumeNum);
                 } catch (Exception e) {
                     logger.error("parse consume error", e);
                 }
