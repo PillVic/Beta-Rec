@@ -20,6 +20,8 @@ public class Movie {
     public final String genres;
     public final int year;
 
+    public static final String MOVIE_FILE = "movies.csv";
+
     public Movie(int movieId, String title, String genres, int year) {
         this.movieId = movieId;
         this.title = title;
@@ -49,7 +51,7 @@ public class Movie {
 
     public static void main(String[] args) {
         DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.parse(COMMON_FILE_PATH + "movies.csv", line -> {
+        ParseFile.parse(COMMON_FILE_PATH + MOVIE_FILE, line -> {
             Movie movie = new Movie(line);
             dbWriter.insertMovie(movie);
         });

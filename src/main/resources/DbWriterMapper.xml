@@ -8,10 +8,6 @@
         INSERT INTO MovieLens.genome_tags (tagId, tag)
         VALUES (#{tagId}, #{tag});
     </insert>
-    <insert id="insertGenomeScore" parameterType="com.betarec.pojo.GenomeScore">
-        INSERT INTO MovieLens.genome_scores (movieId, tagId, relevance)
-        VALUES (#{movieId}, #{tagId}, #{relevance});
-    </insert>
     <insert id="insertLink" parameterType="com.betarec.pojo.Link">
         INSERT INTO MovieLens.links (movieId, imdbId, tmdbId)
         VALUES (#{movieId}, #{imdbId}, #{tmdbId});
@@ -20,8 +16,20 @@
         INSERT INTO MovieLens.movies (movieId, title, genres, year)
         VALUES (#{movieId}, #{title}, #{genres}, #{year});
     </insert>
-    <insert id="insertRating" parameterType="com.betarec.pojo.Rating">
-        INSERT INTO MovieLens.ratings (userId, movieId, rating, timestamp)
-        VALUES (#{userId}, #{movieId}, #{rating}, #{timestamp});
+
+    <!--批量写入-->
+    <insert id="insertRatings">
+        INSERT INTO MovieLens.ratings_#{suffix} (userId,movieId,rating,timestamp)
+        VALUES
+        <foreach collection="ratings" item="item" close=";" separator=",">
+            (#{item.userId}, #{item.movieId}, #{item.rating}, #{item.timestamp})
+        </foreach>
+    </insert>
+    <insert id="insertGenomeScores">
+        INSERT INTO MovieLens.genome_scores_#{suffix} (movieId, tagId, relavance)
+        VALUES
+        <foreach collection="scores" item="item" close=";" separator=",">
+            (#{item.movieId}, #{item.tagId}, #{item.relavance})
+        </foreach>
     </insert>
 </mapper>

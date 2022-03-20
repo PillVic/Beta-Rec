@@ -6,9 +6,17 @@ import com.betarec.utils.ParseFile;
 
 import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
+/**
+ * parse genomeTag.csv: tagId, tag
+ *
+ * @author pillvic
+ * @date 22-03/13
+ */
 public class GenomeTag {
     public final int tagId;
     public final String tag;
+
+    public static final String GENOME_TAG_FILE = "genome-tags.csv";
 
     public GenomeTag(int tagId, String tag) {
         this.tagId = tagId;
@@ -23,7 +31,7 @@ public class GenomeTag {
 
     public static void main(String[] args) {
         DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.parse(COMMON_FILE_PATH+"genome-tags.csv", line->{
+        ParseFile.parse(COMMON_FILE_PATH + GENOME_TAG_FILE, line -> {
             GenomeTag genomeTag = new GenomeTag(line);
             dbWriter.insertGenomeTag(genomeTag);
         });

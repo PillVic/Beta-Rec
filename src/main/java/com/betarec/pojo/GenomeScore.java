@@ -9,13 +9,13 @@ import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 public class GenomeScore {
     public final int movieId;
     public final int tagId;
-    public final double relevance;
+    public final double relavance;
 
     public GenomeScore(String line) {
         String[] v = line.split(",");
         movieId = Integer.parseInt(v[0]);
         tagId = Integer.parseInt(v[1]);
-        relevance = Double.parseDouble(v[2]);
+        relavance = Double.parseDouble(v[2]);
     }
 
     public static void main(String[] args) {
