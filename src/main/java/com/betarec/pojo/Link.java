@@ -1,5 +1,6 @@
 package com.betarec.pojo;
 
+import com.betarec.Base;
 import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
@@ -12,7 +13,7 @@ import static com.betarec.utils.Flags.COMMON_FILE_PATH;
  * @author pillvic
  * @date 22-03/13
  */
-public class Link {
+public class Link extends Base {
     public final int movieId;
     public final int imdbId;
     public final int tmdbId;
@@ -24,6 +25,11 @@ public class Link {
         movieId = Integer.parseInt(v[0]);
         imdbId = Integer.parseInt(v[1]);
         tmdbId = v.length == 3 ? Integer.parseInt(v[2]) : -1;
+    }
+    public Link(int movieId, int imdbId, int tmdbId){
+        this.movieId = movieId;
+        this.imdbId = imdbId;
+        this.tmdbId = tmdbId;
     }
 
     public static void main(String[] args) {

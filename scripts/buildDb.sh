@@ -12,16 +12,3 @@ USER="rec"
 PASSWORD="123456"
 
 mysql -u"${USER}" -p"${PASSWORD}" < init.sql
-
-#依照sample表进行批量建表
-
-for suffix in {0..99}
-do
-    SplitTables=("genome_scores" "ratings")
-    for table in "${SplitTables[@]}"
-    do
-        SQL="Use MovieLens;CREATE TABLE ${table}_${suffix} LIKE ${table}_sample;"
-        echo "${SQL}"
-        mysql --user="${USER}" --password="${PASSWORD}" --execute="${SQL}"
-    done
-done

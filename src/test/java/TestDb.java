@@ -1,3 +1,4 @@
+import com.betarec.data.DbReader;
 import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.pojo.GenomeScore;
@@ -18,7 +19,7 @@ public class TestDb {
             ratings.add(rating);
         }
         DbWriter dbWriter = Resource.getResource().dbWriter;
-        dbWriter.insertRatings(ratings, 0);
+        dbWriter.insertRatings(ratings);
 
         List<GenomeScore> scores = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -27,6 +28,22 @@ public class TestDb {
                             i, i * 2, 8 * 1.0 / 2));
             scores.add(score);
         }
-        dbWriter.insertGenomeScores(scores, 0);
+        dbWriter.insertGenomeScores(scores);
+    }
+
+    @Test
+    public void testDbReader() {
+        DbReader dbReader = Resource.getResource().dbReader;
+        List<Integer> movieIds = List.of(1, 2, 3, 4, 5);
+        for (var entry : dbReader.getMovies(movieIds).entrySet()) {
+            System.out.println(entry);
+        }
+        List<Integer> tagIds = List.of(1, 2, 3);
+        for (var entry : dbReader.getGenomeTags(movieIds).entrySet()) {
+            System.out.println(entry);
+        }
+        for (var entry : dbReader.getLinks(movieIds).entrySet()) {
+            System.out.println(entry);
+        }
     }
 }

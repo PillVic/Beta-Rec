@@ -1,5 +1,6 @@
 package com.betarec.pojo;
 
+import com.betarec.Base;
 import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
@@ -12,7 +13,7 @@ import static com.betarec.utils.Flags.COMMON_FILE_PATH;
  * @author pillvic
  * @date 22-03/13
  */
-public class GenomeTag {
+public class GenomeTag extends Base {
     public final int tagId;
     public final String tag;
 

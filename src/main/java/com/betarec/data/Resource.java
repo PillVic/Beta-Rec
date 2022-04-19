@@ -18,7 +18,7 @@ public class Resource {
     public Resource(){
         this.utilPool = new FixedSizedSchedulerImpl(THREAD_SIZE, "util pool");
         this.dbReader = SqlFactory.getSqlSession(false).getMapper(DbReader.class);
-        this.dbWriter = SqlFactory.getSqlSession(true).getMapper(DbWriter.class);
+        this.dbWriter = SqlFactory.getSqlSession(false).getMapper(DbWriter.class);
     }
     public static Resource getResource(){
         ApplicationContext context = new AnnotationConfigApplicationContext(JavaConfig.class);

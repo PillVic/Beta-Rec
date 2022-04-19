@@ -4,4 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.betarec.data.DbReader">
+    <select id="getMovies" resultType="com.betarec.pojo.Movie">
+        SELECT *
+        FROM movies
+        WHERE movieId IN
+        <foreach collection="movieIds" item="movieId" open="(" close=")" separator=",">
+            #{movieId}
+        </foreach>
+    </select>
+    <select id="getLinks" resultType="com.betarec.pojo.Link">
+        SELECT *
+        FROM links
+        WHERE movieId IN
+        <foreach collection="movieIds" item="movieId" open="(" close=")" separator=",">
+            #{movieId}
+        </foreach>
+    </select>
+    <select id="getGenomeTags" resultType="com.betarec.pojo.GenomeTag">
+        SELECT *
+        FROM genome_tags
+        WHERE tagId IN
+        <foreach collection="tagIds" item="tagId" open="(" close=")" separator=",">
+            #{tagId}
+        </foreach>
+    </select>
 </mapper>

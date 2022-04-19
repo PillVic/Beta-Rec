@@ -19,11 +19,9 @@ public interface DbWriter {
 
     void insertGenomeTag(GenomeTag genomeTag);
 
-    void insertGenomeScore(GenomeScore genomeScore);
+    void insertTag(Tag tag);
 
-    void insertRatings(@Param("ratings") List<Rating> ratings,
-                       @Param("suffix") int suffix);
+    void insertRatings(@Param("ratings") List<Rating> ratings);
 
-    void insertGenomeScores(@Param("scores") List<GenomeScore> scores,
-                            @Param("suffix") int suffix);
+    void insertGenomeScores(@Param("scores") List<GenomeScore> scores);
 }

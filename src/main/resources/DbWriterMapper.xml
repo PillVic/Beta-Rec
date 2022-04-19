@@ -16,6 +16,12 @@
         INSERT INTO MovieLens.movies (movieId, title, genres, year)
         VALUES (#{movieId}, #{title}, #{genres}, #{year});
     </insert>
+    <insert id="insertTag" parameterType="com.betarec.pojo.Tag">
+        INSERT INTO MovieLens.tags (userId, movieId, tag, timestamp)
+        VALUES (#{userId}, #{movieId}, #{tag}, #{timestamp})
+        ON DUPLICATE KEY
+        UPDATE `timestamp` = #{timestamp};
+    </insert>
 
     <!--批量写入-->
     <insert id="insertRatings">

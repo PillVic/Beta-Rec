@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS `movies`(
 CREATE TABLE IF NOT EXISTS `tags`(
     `userId` INTEGER NOT NULL,
     `movieId` INTEGER NOT NULL,
-    `tagId` DOUBLE NOT NULL,
+    `tag` VARCHAR(500) NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`userId`, `timestamp`)
+    PRIMARY KEY (`userId`, `movieId`,`tag`, `timestamp`)
 )ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 CREATE TABLE IF NOT EXISTS `genome_tags`(
@@ -32,18 +32,22 @@ CREATE TABLE IF NOT EXISTS `genome_tags`(
     PRIMARY KEY (`tagId`)
 )ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
---ratings和 genome_scores表数据量太大，决定分成一百张
-CREATE TABLE IF NOT EXISTS `genome_scores_sample`(
+--ratings和 genome_scores表数据量太大，不分表，改为分区
+CREATE TABLE IF NOT EXISTS `genome_scores`(
     `movieId` INTEGER NOT NULL,
     `tagId` INTEGER NOT NULL,
     `relavance` DOUBLE NOT NULL,
-    PRIMARY KEY (`movieId`, `tagId`)
+    PRIMARY KEY (`movieId`, `tagId`),
+    KEY (`movieId`),
+    KEY(`tagId`)
 )ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
-CREATE TABLE IF NOT EXISTS `ratings_sample`(
+CREATE TABLE IF NOT EXISTS `ratings`(
     `userId` INTEGER NOT NULL,
     `movieId` INTEGER NOT NULL,
     `rating` DOUBLE NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`movieId`, `userId`, `timestamp`)
+    PRIMARY KEY (`movieId`, `userId`, `timestamp`),
+    KEY (`movieId`),
+    KEY (`userId`)
 )ENGINE = InnoDB DEFAULT CHARSET = utf8;

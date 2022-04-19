@@ -1,5 +1,6 @@
 package com.betarec.pojo;
 
+import com.betarec.Base;
 import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
@@ -14,7 +15,7 @@ import static com.betarec.utils.Flags.*;
  * @author pillvic
  * @date 22-01/06
  */
-public class Movie {
+public class Movie extends Base {
     public final int movieId;
     public final String title;
     public final String genres;

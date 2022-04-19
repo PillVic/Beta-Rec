@@ -1,5 +1,6 @@
 package com.betarec.pojo;
 
+import com.betarec.Base;
 import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
@@ -8,7 +9,7 @@ import java.sql.Timestamp;
 
 import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
-public class Rating {
+public class Rating extends Base {
     public final int userId;
     public final int movieId;
     public final double rating;
