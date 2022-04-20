@@ -53,8 +53,7 @@ public class Movie extends Base {
     public static void main(String[] args) {
         DbWriter dbWriter = Resource.getResource().dbWriter;
         ParseFile.parse(COMMON_FILE_PATH + MOVIE_FILE, line -> {
-            Movie movie = new Movie(line);
-            dbWriter.insertMovie(movie);
+            dbWriter.insertMovie(new Movie(line));
         });
     }
 }
