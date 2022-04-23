@@ -5,7 +5,7 @@
 #u: when using undefined variable, exit
 #o pipefail: once a single pipe fail exit
 
-#set -xeuo pipefail
+set -xeuo pipefail
 
 
 USER="rec"

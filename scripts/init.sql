@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `genome_tags`(
 CREATE TABLE IF NOT EXISTS `genome_scores`(
     `movieId` INTEGER NOT NULL,
     `tagId` INTEGER NOT NULL,
-    `relavance` DOUBLE NOT NULL,
+    `relevance` DOUBLE NOT NULL,
     PRIMARY KEY (`movieId`, `tagId`),
     KEY (`movieId`),
     KEY(`tagId`)
