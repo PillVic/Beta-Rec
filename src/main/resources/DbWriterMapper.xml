@@ -25,17 +25,17 @@
 
     <!--批量写入-->
     <insert id="insertRatings">
-        INSERT INTO MovieLens.ratings_#{suffix} (userId,movieId,rating,timestamp)
+        INSERT INTO MovieLens.ratings (userId,movieId,rating,timestamp)
         VALUES
         <foreach collection="ratings" item="item" close=";" separator=",">
             (#{item.userId}, #{item.movieId}, #{item.rating}, #{item.timestamp})
         </foreach>
     </insert>
     <insert id="insertGenomeScores">
-        INSERT INTO MovieLens.genome_scores_#{suffix} (movieId, tagId, relavance)
+        INSERT INTO MovieLens.genome_scores (movieId, tagId, relevance)
         VALUES
         <foreach collection="scores" item="item" close=";" separator=",">
-            (#{item.movieId}, #{item.tagId}, #{item.relavance})
+            (#{item.movieId}, #{item.tagId}, #{item.relevance})
         </foreach>
     </insert>
 </mapper>

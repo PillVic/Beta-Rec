@@ -32,11 +32,15 @@ public class Link extends Base {
         this.tmdbId = tmdbId;
     }
 
-    public static void main(String[] args) {
+    public static void buildLinkDb(){
         DbWriter dbWriter = Resource.getResource().dbWriter;
         ParseFile.parse(COMMON_FILE_PATH + LINK_FILE, line -> {
             Link link = new Link(line);
             dbWriter.insertLink(link);
         });
+    }
+
+    public static void main(String[] args) {
+        buildLinkDb();
     }
 }

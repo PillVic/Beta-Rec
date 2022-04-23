@@ -6,9 +6,10 @@ import com.betarec.pojo.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DbBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(DbBuilder.class);
+public class DataBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(DataBuilder.class);
     public static void buildDb(){
+        //build MovieLens Db
         logger.info("[BUILD DB]:MovieLens.movie");
         Movie.buildMovieDb();
         logger.info("[BUILD DB]:MovieLens.link");

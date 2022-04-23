@@ -30,11 +30,15 @@ public class GenomeTag extends Base {
         this.tag = v[1];
     }
 
-    public static void main(String[] args) {
+    public static void buildGenomeTagDb(){
         DbWriter dbWriter = Resource.getResource().dbWriter;
         ParseFile.parse(COMMON_FILE_PATH + GENOME_TAG_FILE, line -> {
             GenomeTag genomeTag = new GenomeTag(line);
             dbWriter.insertGenomeTag(genomeTag);
         });
+    }
+
+    public static void main(String[] args) {
+        buildGenomeTagDb();
     }
 }

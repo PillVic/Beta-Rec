@@ -49,11 +49,14 @@ public class Movie extends Base {
         this.year = Integer.parseInt(t);
         this.title = v[1].substring(0, begin - 1);
     }
-
-    public static void main(String[] args) {
+    public static void buildMovieDb(){
         DbWriter dbWriter = Resource.getResource().dbWriter;
         ParseFile.parse(COMMON_FILE_PATH + MOVIE_FILE, line -> {
             dbWriter.insertMovie(new Movie(line));
         });
+    }
+
+    public static void main(String[] args) {
+        buildMovieDb();
     }
 }
