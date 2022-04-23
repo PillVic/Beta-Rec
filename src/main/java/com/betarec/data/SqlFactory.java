@@ -25,13 +25,19 @@ public class SqlFactory {
             logger.error("SqlFactory ERROR:", e);
         }
     }
-    public static SqlSession getSqlSession(boolean realWrite){
+    public static SqlSession getSqlSession(boolean realWrite, boolean autoClose){
         SqlSession sqlSession = sqlSessionFactory.openSession();
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             if(realWrite){
+                logger.info("commit sql session start");
                 sqlSession.commit();
+                logger.info("commit sql session end");
             }
-            sqlSession.close();
+            logger.info("close sql session start");
+            if(autoClose){
+                sqlSession.close();
+            }
+            logger.info("close sql session end");
         }));
         return sqlSession;
     }

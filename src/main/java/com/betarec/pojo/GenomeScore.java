@@ -22,15 +22,22 @@ public class GenomeScore extends Base {
         relevance = Double.parseDouble(v[2]);
     }
 
-    public static void buildDb(){
-        DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.batchParse(COMMON_FILE_PATH + GNOME_SCORE_FILE, lines -> {
-            List<GenomeScore> genomeScores = lines.stream().map(GenomeScore::new).toList();
-            dbWriter.insertGenomeScores(genomeScores);
+    public GenomeScore(int movieId, int tagId, double relevance) {
+        this.movieId = movieId;
+        this.tagId = tagId;
+        this.relevance = relevance;
+    }
+
+    public static void buildGenomeScoreDb() {
+        ParseFile.batchParse(COMMON_FILE_PATH + GNOME_SCORE_FILE, lst -> {
+            Resource.batchInsert((dbWriter, lines) -> {
+                List<GenomeScore> genomeScores = lst.stream().map(GenomeScore::new).toList();
+                dbWriter.insertGenomeScores(genomeScores);
+            },lst);
         });
     }
 
     public static void main(String[] args) {
-        GenomeScore.buildDb();
+        GenomeScore.buildGenomeScoreDb();
     }
 }

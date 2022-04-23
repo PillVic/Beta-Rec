@@ -7,14 +7,12 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -23,7 +21,7 @@ public class ParseFile {
     private static final Logger logger = LoggerFactory.getLogger(ParseFile.class);
 
     private static final int CONSUME_THREADS = 10;
-    private static final int MIN_BATCH_SIZE = 200;
+    private static final int MIN_BATCH_SIZE = 500;
 
     private static void readFile(String fileName,
                                  BlockingQueue<String> queue, AtomicBoolean shutdown) {
