@@ -7,4 +7,9 @@ public class Base {
     public String toString(){
         return toJsonString(this);
     }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
 }
