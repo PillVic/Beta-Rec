@@ -1,12 +1,13 @@
 package com.betarec.pojo;
 
 import com.betarec.Base;
-import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
@@ -35,10 +36,11 @@ public class Rating extends Base {
     }
 
     public static void buildRatingsDb() {
-        DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.batchParse(COMMON_FILE_PATH + RATING_FILE, lines -> {
-            List<Rating> ratings = lines.stream().map(Rating::new).toList();
-            dbWriter.insertRatings(ratings);
+        ParseFile.batchParse(COMMON_FILE_PATH + RATING_FILE, lst -> {
+            Resource.batchInsert((dbWriter, lines)->{
+                List<Rating> ratings = lines.stream().map(Rating::new).toList();
+                dbWriter.insertRatings(ratings);
+            }, lst);
         });
     }
 

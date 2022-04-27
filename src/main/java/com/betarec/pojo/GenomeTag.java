@@ -26,8 +26,16 @@ public class GenomeTag extends Base {
 
     public GenomeTag(String line) {
         String[] v = line.split(",");
+        if(v.length !=2){
+            System.out.println(line);
+        }
         this.tagId = Integer.parseInt(v[0]);
         this.tag = v[1];
+    }
+
+    @Override
+    public int hashCode() {
+        return tagId;
     }
 
     public static void buildGenomeTagDb(){

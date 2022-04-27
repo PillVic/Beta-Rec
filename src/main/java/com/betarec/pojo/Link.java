@@ -26,13 +26,19 @@ public class Link extends Base {
         imdbId = Integer.parseInt(v[1]);
         tmdbId = v.length == 3 ? Integer.parseInt(v[2]) : -1;
     }
-    public Link(int movieId, int imdbId, int tmdbId){
+
+    public Link(int movieId, int imdbId, int tmdbId) {
         this.movieId = movieId;
         this.imdbId = imdbId;
         this.tmdbId = tmdbId;
     }
 
-    public static void buildLinkDb(){
+    @Override
+    public int hashCode() {
+        return movieId;
+    }
+
+    public static void buildLinkDb() {
         DbWriter dbWriter = Resource.getResource().dbWriter;
         ParseFile.parse(COMMON_FILE_PATH + LINK_FILE, line -> {
             Link link = new Link(line);
