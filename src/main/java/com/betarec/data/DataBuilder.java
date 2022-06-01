@@ -4,27 +4,34 @@ import com.betarec.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * @desc 导入数据库，以及构建倒排索引由这个类统一构建
-* */
+ */
 public class DataBuilder {
     private static final Logger logger = LoggerFactory.getLogger(DataBuilder.class);
-    public static void buildDb(){
+
+    public static void buildDb(ThreadPoolExecutor pool) {
         //build MovieLens Db
-        logger.info("[BUILD DB]:MovieLens.movie");
-        Movie.buildMovieDb();
-        logger.info("[BUILD DB]:MovieLens.link");
-        Link.buildLinkDb();
+        logger.info("[BUILD DB]:MovieLens.movies");
+        Movie.buildMovieDb(pool);
+        logger.info("[BUILD DB]:MovieLens.links");
+        Link.buildLinkDb(pool);
+        logger.info("[BUILD DB]:MovieLens.tags");
+        Tag.buildTagDb(pool);
         logger.info("[BUILD DB]:MovieLens.genome_tags");
-        GenomeTag.buildGenomeTagDb();
+        GenomeTag.buildGenomeTagDb(pool);
 
         logger.info("[BUILD DB]:MovieLens.genome_scores");
-        GenomeScore.buildGenomeScoreDb();
+        GenomeScore.buildGenomeScoreDb(pool);
         logger.info("[BUILD DB]:MovieLens.ratings");
-        Rating.buildRatingsDb();
+        Rating.buildRatingsDb(pool);
     }
 
     public static void main(String[] args) {
-        buildDb();
+        ThreadPoolExecutor pool = Resource.buildThreadPool();
+        buildDb(pool);
+        pool.shutdown();
     }
 }

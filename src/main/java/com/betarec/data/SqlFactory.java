@@ -29,15 +29,11 @@ public class SqlFactory {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             if(realWrite){
-                logger.info("commit sql session start");
                 sqlSession.commit();
-                logger.info("commit sql session end");
             }
-            logger.info("close sql session start");
             if(autoClose){
                 sqlSession.close();
             }
-            logger.info("close sql session end");
         }));
         return sqlSession;
     }

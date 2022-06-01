@@ -9,19 +9,18 @@ import java.util.List;
 /**
  * 相关数据的写入操作
  * 由于genome_scores, ratings的数据量过大，进行写入
-* */
+ */
 public interface DbWriter {
-    void insertMovie(Movie movie);
-
-    void insertLink(Link link);
-
-    void insertRating(Rating rating);
-
-    void insertGenomeTag(GenomeTag genomeTag);
-
-    void insertTag(Tag tag);
 
     void insertRatings(@Param("ratings") List<Rating> ratings);
 
     void insertGenomeScores(@Param("scores") List<GenomeScore> scores);
+
+    void insertGenomeTags(@Param("genomeTags") List<GenomeTag> genomeTags);
+
+    void insertLinks(@Param("links") List<Link> links);
+
+    void insertMovies(@Param("movies") List<Movie> movies);
+
+    void insertTags(@Param("tags") List<Tag> tags);
 }

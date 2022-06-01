@@ -37,8 +37,8 @@ public class ParseFile {
                 if (lines.size() >= MIN_BATCH_SIZE) {
                     for (String s : lines) {
                         queue.put(s);
-                        produceNum += lines.size();
                     }
+                    produceNum += lines.size();
                     lines.clear();
                 }
             }
@@ -46,6 +46,7 @@ public class ParseFile {
                 for (var s : lines) {
                     queue.put(s);
                 }
+                produceNum += lines.size();
                 lines.clear();
             }
             logger.info("produceNum {}", produceNum);
@@ -67,7 +68,7 @@ public class ParseFile {
             List<String> lines = new ArrayList<>(QUEUE_SIZE);
             while (!shutdown.get() || !queue.isEmpty()) {
                 String line = queue.poll(500, TimeUnit.MILLISECONDS);
-                if(!ObjectUtils.isEmpty(line)){
+                if (!ObjectUtils.isEmpty(line)) {
                     lines.add(line);
                 }
                 if (lines.size() >= MIN_BATCH_SIZE) {
@@ -75,7 +76,7 @@ public class ParseFile {
                     consumeNum.addAndGet(lines.size());
                     lines.clear();
                     long consumeNumPresent = consumeNum.get();
-                    if(consumeNumPresent %1000 <= 20){
+                    if (consumeNumPresent % 1000 <= 20) {
                         logger.info("consume num:{}", consumeNumPresent);
                     }
                 }
@@ -93,7 +94,7 @@ public class ParseFile {
     public static void parse(String fileName, Consumer<String> consumer) {
         try {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
-            ThreadPoolExecutor pool = Resource.getResource().utilPool;
+            ThreadPoolExecutor pool = Resource.buildThreadPool();
             AtomicBoolean shutdown = new AtomicBoolean(false);
             pool.submit(() -> readFile(fileName, queue, shutdown));
             pool.submit(() -> {
@@ -113,17 +114,17 @@ public class ParseFile {
                 } catch (Exception e) {
                     logger.error("parse consume error", e);
                 }
-            }).get();
+            });
+            pool.shutdown();
         } catch (Exception e) {
             logger.error("parse error", e);
         }
     }
 
-    public static void batchParse(String fileName, Consumer<List<String>> consumer) {
+    public static void batchParse(String fileName, Consumer<List<String>> consumer, ThreadPoolExecutor pool) {
         try {
             BlockingQueue<String> queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
             AtomicBoolean shutdown = new AtomicBoolean(false);
-            ThreadPoolExecutor pool = Resource.getResource().utilPool;
             pool.submit(() -> readFile(fileName, queue, shutdown));
             List<Future<?>> parseFutures = new ArrayList<>(CONSUME_THREADS);
             logger.info("start parse:{}", queue.take());
@@ -134,7 +135,7 @@ public class ParseFile {
             int threadNum = 0;
             for (var future : parseFutures) {
                 future.get();
-                threadNum +=1;
+                threadNum += 1;
                 logger.info("consume thread done:{}/{}", threadNum, CONSUME_THREADS);
             }
             logger.info("total consume line:{}", consumeNum.get());

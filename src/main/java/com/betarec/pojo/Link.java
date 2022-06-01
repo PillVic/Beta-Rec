@@ -5,6 +5,10 @@ import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
 
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
+
 import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
 /**
@@ -38,15 +42,18 @@ public class Link extends Base {
         return movieId;
     }
 
-    public static void buildLinkDb() {
-        DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.parse(COMMON_FILE_PATH + LINK_FILE, line -> {
-            Link link = new Link(line);
-            dbWriter.insertLink(link);
-        });
+    public static void buildLinkDb(ThreadPoolExecutor pool) {
+        ParseFile.batchParse(COMMON_FILE_PATH + LINK_FILE, lst -> {
+            Resource.batchInsert((dbWriter, lines) -> {
+                List<Link> links = lines.stream().map(Link::new).collect(Collectors.toList());
+                dbWriter.insertLinks(links);
+            }, lst);
+        }, pool);
     }
 
     public static void main(String[] args) {
-        buildLinkDb();
+        ThreadPoolExecutor pool = Resource.buildThreadPool();
+        buildLinkDb(pool);
+        pool.shutdown();
     }
 }

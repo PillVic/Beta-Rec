@@ -5,6 +5,10 @@ import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
 
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
+
 import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
 /**
@@ -26,7 +30,7 @@ public class GenomeTag extends Base {
 
     public GenomeTag(String line) {
         String[] v = line.split(",");
-        if(v.length !=2){
+        if (v.length != 2) {
             System.out.println(line);
         }
         this.tagId = Integer.parseInt(v[0]);
@@ -38,15 +42,18 @@ public class GenomeTag extends Base {
         return tagId;
     }
 
-    public static void buildGenomeTagDb(){
-        DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.parse(COMMON_FILE_PATH + GENOME_TAG_FILE, line -> {
-            GenomeTag genomeTag = new GenomeTag(line);
-            dbWriter.insertGenomeTag(genomeTag);
-        });
+    public static void buildGenomeTagDb(ThreadPoolExecutor pool) {
+        ParseFile.batchParse(COMMON_FILE_PATH + GENOME_TAG_FILE, lst -> {
+            Resource.batchInsert((dbWriter, lines) -> {
+                List<GenomeTag> genomeTags = lines.stream().map(GenomeTag::new).collect(Collectors.toList());
+                dbWriter.insertGenomeTags(genomeTags);
+            }, lst);
+        }, pool);
     }
 
     public static void main(String[] args) {
-        buildGenomeTagDb();
+        ThreadPoolExecutor pool = Resource.buildThreadPool();
+        buildGenomeTagDb(pool);
+        pool.shutdown();
     }
 }

@@ -20,4 +20,9 @@ public interface DbReader {
 
     @MapKey("tagId")
     Map<Integer, GenomeTag> getGenomeTags(@Param("tagIds") List<Integer> genomeTagIds);
+
+    List<GenomeScore> getGenomeScoresByMovieId(Integer movieId);
+    List<GenomeScore> getGenomeScoresByTagId(Integer tagId);
+    @MapKey("movieId")
+    Map<Integer, List<GenomeScore>> getGenomeScoresByMovieIds(@Param("movieIds") List<Integer> movieIds);
 }

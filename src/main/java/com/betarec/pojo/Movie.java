@@ -5,7 +5,10 @@ import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
 
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static com.betarec.utils.Flags.*;
 
@@ -55,14 +58,18 @@ public class Movie extends Base {
         return movieId;
     }
 
-    public static void buildMovieDb() {
-        DbWriter dbWriter = Resource.getResource().dbWriter;
-        ParseFile.parse(COMMON_FILE_PATH + MOVIE_FILE, line -> {
-            dbWriter.insertMovie(new Movie(line));
-        });
+    public static void buildMovieDb(ThreadPoolExecutor pool) {
+        ParseFile.batchParse(COMMON_FILE_PATH + MOVIE_FILE, lst -> {
+            Resource.batchInsert((dbWriter, lines) -> {
+                List<Movie> movies = lines.stream().map(Movie::new).collect(Collectors.toList());
+                dbWriter.insertMovies(movies);
+            }, lst);
+        }, pool);
     }
 
     public static void main(String[] args) {
-        buildMovieDb();
+        ThreadPoolExecutor pool = Resource.buildThreadPool();
+        buildMovieDb(pool);
+        pool.shutdown();
     }
 }

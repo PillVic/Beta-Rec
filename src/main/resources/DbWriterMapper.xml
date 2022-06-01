@@ -38,4 +38,33 @@
             (#{item.movieId}, #{item.tagId}, #{item.relevance})
         </foreach>
     </insert>
+    <insert id="insertLinks">
+        INSERT INTO MovieLens.links (movieId, imdbId, tmdbId)
+        VALUES
+        <foreach collection="links" item="item" close=";" separator=",">
+            (#{item.movieId}, #{item.imdbId}, #{item.tmdbId})
+        </foreach>
+    </insert>
+    <insert id="insertMovies">
+        INSERT INTO MovieLens.movies (movieId, title, genres, year)
+        VALUES
+        <foreach collection="movies" item="item" close=";" separator=",">
+            (#{item.movieId}, #{item.title}, #{item.genres}, #{item.year})
+        </foreach>
+    </insert>
+    <insert id="insertTags">
+        INSERT INTO MovieLens.tags (userId, movieId, tag, timestamp)
+        VALUES
+        <foreach collection="tags" item="item" close=";" separator=",">
+            (#{item.userId}, #{item.movieId}, #{item.tag}, #{item.timestamp})
+        </foreach>
+
+    </insert>
+    <insert id="insertGenomeTags">
+        INSERT INTO MovieLens.genome_tags (tagId, tag)
+        VALUES
+        <foreach collection="genomeTags" item="item" close=";" separator=",">
+            (#{item.tagId}, #{item.tag})
+        </foreach>
+    </insert>
 </mapper>

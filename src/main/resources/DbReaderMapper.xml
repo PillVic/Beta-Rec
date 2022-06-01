@@ -28,4 +28,17 @@
             #{tagId}
         </foreach>
     </select>
+
+    <select id="getGenomeScoresByMovieId" parameterType="int" resultType="com.betarec.pojo.GenomeScore">
+        SELECT *
+        FROM genome_scores
+        WHERE movieId = #{movieId};
+    </select>
+
+    <select id="getGenomeScoresByTagId" parameterType="int" resultType="com.betarec.pojo.GenomeScore">
+        SELECT *
+        FROM genome_scores
+        WHERE tagId = #{tagId};
+    </select>
+
 </mapper>

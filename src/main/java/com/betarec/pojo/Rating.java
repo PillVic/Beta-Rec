@@ -5,9 +5,8 @@ import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
@@ -35,16 +34,18 @@ public class Rating extends Base {
 
     }
 
-    public static void buildRatingsDb() {
+    public static void buildRatingsDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + RATING_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines)->{
+            Resource.batchInsert((dbWriter, lines) -> {
                 List<Rating> ratings = lines.stream().map(Rating::new).toList();
                 dbWriter.insertRatings(ratings);
             }, lst);
-        });
+        }, pool);
     }
 
     public static void main(String[] args) {
-        Rating.buildRatingsDb();
+        ThreadPoolExecutor pool = Resource.buildThreadPool();
+        Rating.buildRatingsDb(pool);
+        pool.shutdown();
     }
 }
