@@ -23,7 +23,7 @@ public class Rating extends Base {
         this.userId = Integer.parseInt(v[0]);
         this.movieId = Integer.parseInt(v[1]);
         this.rating = Double.parseDouble(v[2]);
-        this.timestamp = new Timestamp(Long.parseLong(v[3]));
+        this.timestamp = new Timestamp(Long.parseLong(v[3]) * 1000L);
     }
 
     public Rating(int userId, int movieId, double rating, Timestamp timestamp) {
