@@ -1,5 +1,6 @@
 package com.betarec.pojo;
 
+import com.betarec.Base;
 import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
@@ -20,8 +21,7 @@ import static com.betarec.utils.Flags.COMMON_FILE_PATH;
  * @author pillvic
  * @date 22-03/29
  */
-public class Tag {
-    public static final Logger logger = LoggerFactory.getLogger(Tag.class);
+public class Tag extends Base {
     public static final String TAG_FILE = "tags.csv";
     public final int userId;
     public final int movieId;
@@ -41,6 +41,13 @@ public class Tag {
         this.movieId = Integer.parseInt(v.get(1));
         this.tag = v.get(2).replace("\"", "");
         this.timestamp = new Timestamp(Long.parseLong(v.get(3)) * 1000);
+    }
+
+    public Tag(int userId, int movieId, String tag, Timestamp timestamp) {
+        this.userId = userId;
+        this.movieId = movieId;
+        this.tag = tag;
+        this.timestamp = timestamp;
     }
 
     public static void buildTagDb(ThreadPoolExecutor pool) {

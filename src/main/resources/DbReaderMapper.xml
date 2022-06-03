@@ -4,6 +4,40 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.betarec.data.DbReader">
+    <select id="getMaxMovieId" resultType="int">
+        SELECT MAX(movieId)
+        FROM movies;
+    </select>
+
+    <select id="getMinMovieId" resultType="int">
+        SELECT MIN(movieId)
+        FROM movies;
+    </select>
+
+    <select id="getMovieIds" resultType="int">
+        SELECT movieId
+        FROM movies
+        WHERE movieId &gt;= #{beginMovieId}
+            AND movieId &lt;= #{endMovieId}
+    </select>
+
+    <select id="getMaxUserId" resultType="int">
+        SELECT MAX(userId)
+        FROM ratings;
+    </select>
+
+    <select id="getMinUserId" resultType="int">
+        SELECT MIN(userId)
+        FROM ratings;
+    </select>
+
+    <select id="getUserIds" resultType="int">
+        SELECT DISTINCT(userId)
+        FROM ratings
+        WHERE userId &gt;= #{beginUserId}
+            AND userId &lt;= #{endUserId}
+    </select>
+
     <select id="getMovies" resultType="com.betarec.pojo.Movie">
         SELECT *
         FROM movies
@@ -39,6 +73,30 @@
         SELECT *
         FROM genome_scores
         WHERE tagId = #{tagId};
+    </select>
+
+    <select id = "getRatingsByUserId" parameterType="int" resultType="com.betarec.pojo.Rating">
+        SELECT *
+        FROM ratings
+        WHERE userId = ${userId}
+    </select>
+
+    <select id = "getRatingsByMovieId" parameterType="int" resultType="com.betarec.pojo.Rating">
+        SELECT *
+        FROM ratings
+        WHERE movieId = ${userId}
+    </select>
+
+    <select id="getTagsByUserId" parameterType="int" resultType="com.betarec.pojo.Tag">
+        SELECT *
+        FROM tags
+        WHERE userId = ${userId}
+    </select>
+
+    <select id="getTagsByMovieId" parameterType="int" resultType="com.betarec.pojo.Tag">
+        SELECT *
+        FROM tags
+        WHERE movieId = ${movieId}
     </select>
 
 </mapper>

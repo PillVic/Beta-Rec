@@ -9,9 +9,21 @@ import java.util.Map;
 
 /**
  * 相关数据的读操作
- * 由于genome_scores, ratings的数据量过大，要分表， 读操作方法位于Split
  */
 public interface DbReader {
+    int getMaxMovieId();
+
+    int getMinMovieId();
+
+    List<Integer> getMovieIds(@Param("beginMovieId") int beginMovieId, @Param("endMovieId") int endMovieId);
+
+    int getMaxUserId();
+
+    int getMinUserId();
+
+    List<Integer> getUserIds(@Param("beginUserId") int beginUserId, @Param("endUserId") int endUserId);
+
+
     @MapKey("movieId")
     Map<Integer, Movie> getMovies(@Param("movieIds") List<Integer> movieIds);
 
@@ -22,7 +34,14 @@ public interface DbReader {
     Map<Integer, GenomeTag> getGenomeTags(@Param("tagIds") List<Integer> genomeTagIds);
 
     List<GenomeScore> getGenomeScoresByMovieId(Integer movieId);
+
     List<GenomeScore> getGenomeScoresByTagId(Integer tagId);
-    @MapKey("movieId")
-    Map<Integer, List<GenomeScore>> getGenomeScoresByMovieIds(@Param("movieIds") List<Integer> movieIds);
+
+    List<Rating> getRatingsByUserId(Integer userId);
+
+    List<Rating> getRatingsByMovieId(Integer movieId);
+
+    List<Tag> getTagsByUserId(Integer userId);
+
+    List<Tag> getTagsByMovieId(Integer movieId);
 }
