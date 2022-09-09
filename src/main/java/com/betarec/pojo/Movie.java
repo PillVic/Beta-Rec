@@ -40,7 +40,7 @@ public class Movie extends Base {
             v = line.split(",");
         }
         movieId = Integer.parseInt(v[0]);
-        genres = v[2];
+        genres = v[2].trim();
         Matcher yearMatcher = YEAR_PATTERN.matcher(v[1]);
         int begin = v[1].length();
         String t = "-1";
@@ -49,7 +49,7 @@ public class Movie extends Base {
             begin = yearMatcher.start();
         }
         this.year = Integer.parseInt(t);
-        this.title = v[1].substring(0, begin - 1);
+        this.title = v[1].substring(0, begin - 1).trim();
     }
 
     @Override

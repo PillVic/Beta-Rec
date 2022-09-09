@@ -1,6 +1,6 @@
 package com.betarec;
 
-import static com.betarec.utils.ObjectAnalyzer.toJsonString;
+import static com.betarec.utils.ObjectAnalyzer.toJsonStringV2;
 
 /** 类的基础的方法实现
  * @author neovic
@@ -8,7 +8,7 @@ import static com.betarec.utils.ObjectAnalyzer.toJsonString;
 public class Base {
     @Override
     public String toString() {
-        return toJsonString(this);
+        return toJsonStringV2(this);
     }
 
     @Override
@@ -27,6 +27,6 @@ public class Base {
         if (!obj.getClass().equals(this.getClass())) {
             return false;
         }
-        return toJsonString(obj).equals(toString());
+        return toJsonStringV2(obj).equals(toString());
     }
 }
