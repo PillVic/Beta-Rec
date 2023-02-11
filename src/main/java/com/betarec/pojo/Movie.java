@@ -49,7 +49,7 @@ public class Movie extends Base {
             begin = yearMatcher.start();
         }
         this.year = Integer.parseInt(t);
-        this.title = v[1].substring(0, begin - 1).trim();
+        this.title = v[1].substring(0, begin).trim();
     }
 
     @Override
