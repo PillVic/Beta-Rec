@@ -14,9 +14,9 @@ public class MovieWrapper {
     public static final String MOVIE_YEAR = "movie_year";
     public static final String MOVIE_GENRES = "movie_year";
     /**
-     *  movieTag的保存通过前缀：tagId存储，值为相关度,
-     *  从而既可查询有无tag,也可查询相关度大小
-    * */
+     * movieTag的保存通过前缀：tagId存储，值为相关度,
+     * 从而既可查询有无tag,也可查询相关度大小
+     */
     public static final String MOVIE_TAG_PREFIX = "movie_tag:";
 
     public Movie movie;
@@ -40,9 +40,7 @@ public class MovieWrapper {
     public Document getDoc() {
         Document doc = new Document();
         doc.add(new IntPoint(MOVIE_ID, movie.movieId));
-        if (movie.year > 0) {
-            doc.add(new IntPoint(MOVIE_YEAR, movie.year));
-        }
+        doc.add(new IntPoint(MOVIE_YEAR, movie.year));
         if (StringUtils.hasLength(movie.genres)) {
             List<String> genres = Arrays
                     .stream(movie.genres.split(Movie.MOVIE_GENRES_SPLIT)).toList();

@@ -6,8 +6,13 @@ import com.betarec.index.MovieWrapper;
 import com.betarec.pojo.GenomeScore;
 import com.betarec.pojo.Movie;
 import com.betarec.pojo.Rating;
+import com.betarec.utils.StatCount;
+import com.betarec.utils.Ticker;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.StringField;
@@ -18,14 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 
 public class MovieIndexBuilder implements Runnable {
-    public int batchSize = 20;
+    public int batchSize = 200;
+    public int threads = 20;
 
     public static String MOVIE_INDEX_DIR = "Data/index/movieIndex";
-    private IndexWriter writer;
     private static final Logger logger = LoggerFactory.getLogger(MovieIndexBuilder.class);
     private IndexWriter indexWriter;
     private MMapDirectory directory;
@@ -37,14 +45,21 @@ public class MovieIndexBuilder implements Runnable {
             r = Resource.getResource();
             initIndexWriter();
             DbReader dbReader = Resource.getResource().dbReader;
+            ExecutorService executor = Executors.newFixedThreadPool(threads);
+            StatCount statCount = new StatCount();
 
-            int minMovieId = 0;//dbReader.getMinMovieId();
-            int maxMovieId = 20;//dbReader.getMaxMovieId();
+            int minMovieId = dbReader.getMinMovieId();
+            int maxMovieId = dbReader.getMaxMovieId();
             for (int i = minMovieId; i <= maxMovieId; i += batchSize) {
-                indexMovieRange(i, i + batchSize);
+                final int beginMovieId = i;
+                final int endMovieId = i + batchSize;
+                executor.submit(() -> {
+                    indexMovieRange(beginMovieId, endMovieId, statCount);
+                });
             }
-
-            logger.info("write index done");
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+            logger.info("write index done, statCount:{}", statCount);
             indexWriter.commit();
             indexWriter.close();
             directory.close();
@@ -65,19 +80,38 @@ public class MovieIndexBuilder implements Runnable {
         }
     }
 
-    private void indexMovieRange(int beginMovieId, int endMovieId) {
+    private void indexMovieRange(int beginMovieId, int endMovieId, StatCount statCount) {
         try {
-            logger.info("indexMovieRange:{}, {}", beginMovieId, endMovieId);
+            Ticker ticker = new Ticker();
             List<Integer> movieIds = r.dbReader.getMovieIds(beginMovieId, endMovieId);
+            if(CollectionUtils.isEmpty(movieIds)){
+                return;
+            }
             Map<Integer, Movie> movieMap = r.dbReader.getMovies(movieIds);
+            Map<Integer, List<GenomeScore>> genomeScoresMap = new HashMap<>(movieIds.size());
+            Map<Integer, List<Rating>> ratingsMap = new HashMap<>(movieIds.size());
+            movieIds.forEach(movieId -> {
+                genomeScoresMap.put(movieId, r.dbReader.getGenomeScoresByMovieId(movieId));
+                ratingsMap.put(movieId, r.dbReader.getRatingsByMovieId(movieId));
+            });
+            ticker.tick("db");
             for (Movie movie : movieMap.values()) {
-                List<GenomeScore> genomeScores = r.dbReader.getGenomeScoresByMovieId(movie.movieId);
-                List<Rating> ratings = r.dbReader.getRatingsByMovieId(movie.movieId);
-                logger.info("movieId:{}, genomeScores:{}, ratings:{}",
-                        movie.movieId, genomeScores.size(), ratings.size());
+                statCount.count("movie");
+                List<GenomeScore> genomeScores = genomeScoresMap.getOrDefault(movie.movieId, Collections.emptyList());
+                if (CollectionUtils.isEmpty(genomeScores)) {
+                    statCount.count("empty-genome-score");
+                }
+                List<Rating> ratings = ratingsMap.getOrDefault(movie.movieId, Collections.emptyList());
+                if (CollectionUtils.isEmpty(ratings)) {
+                    statCount.count("empty-rating");
+                }
                 MovieWrapper wrapper = new MovieWrapper(movie).setRatings(ratings).setGenomeScores(genomeScores);
                 indexWriter.addDocument(wrapper.getDoc());
             }
+            ticker.tick("add-doc");
+            indexWriter.commit();
+            ticker.tick("commit");
+            logger.info("indexMovieRange {},{}, ticker:{}", beginMovieId, endMovieId, ticker);
         } catch (Exception e) {
             logger.error("indexMovieRange ERROR {}, {}", beginMovieId, endMovieId, e);
         }
