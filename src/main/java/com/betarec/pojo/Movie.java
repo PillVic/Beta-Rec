@@ -24,6 +24,7 @@ public class Movie extends Base {
     public final int year;
 
     public static final String MOVIE_FILE = "movies.csv";
+    public static final String MOVIE_GENRES_SPLIT = "\\|";
 
     public Movie(int movieId, String title, String genres, int year) {
         this.movieId = movieId;
