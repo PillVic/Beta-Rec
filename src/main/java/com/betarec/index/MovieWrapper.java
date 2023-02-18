@@ -1,8 +1,8 @@
 package com.betarec.index;
 
-import com.betarec.pojo.GenomeScore;
-import com.betarec.pojo.Movie;
-import com.betarec.pojo.Rating;
+import com.betarec.data.pojo.GenomeScore;
+import com.betarec.data.pojo.Movie;
+import com.betarec.data.pojo.Rating;
 import org.apache.lucene.document.*;
 import org.springframework.util.StringUtils;
 

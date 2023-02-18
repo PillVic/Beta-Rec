@@ -1,6 +1,6 @@
 package com.betarec.data;
 
-import com.betarec.pojo.*;
+import com.betarec.data.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

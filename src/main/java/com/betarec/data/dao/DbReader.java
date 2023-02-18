@@ -1,6 +1,6 @@
-package com.betarec.data;
+package com.betarec.data.dao;
 
-import com.betarec.pojo.*;
+import com.betarec.data.pojo.*;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 

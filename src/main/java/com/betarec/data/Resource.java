@@ -1,6 +1,8 @@
 package com.betarec.data;
 
 import com.betarec.JavaConfig;
+import com.betarec.data.dao.DbReader;
+import com.betarec.data.dao.DbWriter;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

@@ -1,21 +1,16 @@
 package com.betarec.index.builder;
 
-import com.betarec.data.DbReader;
+import com.betarec.data.dao.DbReader;
 import com.betarec.data.Resource;
 import com.betarec.index.MovieWrapper;
-import com.betarec.pojo.GenomeScore;
-import com.betarec.pojo.Movie;
-import com.betarec.pojo.Rating;
+import com.betarec.data.pojo.GenomeScore;
+import com.betarec.data.pojo.Movie;
+import com.betarec.data.pojo.Rating;
 import com.betarec.utils.StatCount;
 import com.betarec.utils.Ticker;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
-import org.apache.lucene.analysis.core.StopAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.IntPoint;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.MMapDirectory;

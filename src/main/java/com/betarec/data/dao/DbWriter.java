@@ -1,7 +1,6 @@
-package com.betarec.data;
+package com.betarec.data.dao;
 
-import com.betarec.pojo.*;
-import com.betarec.utils.Flags.*;
+import com.betarec.data.pojo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

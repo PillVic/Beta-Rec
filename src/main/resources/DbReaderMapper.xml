@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.betarec.data.DbReader">
+<mapper namespace="com.betarec.data.dao.DbReader">
     <select id="getMaxMovieId" resultType="int">
         SELECT MAX(movieId)
         FROM movies;
@@ -38,7 +38,7 @@
             AND userId &lt;= #{endUserId}
     </select>
 
-    <select id="getMovies" resultType="com.betarec.pojo.Movie">
+    <select id="getMovies" resultType="com.betarec.data.pojo.Movie">
         SELECT *
         FROM movies
         WHERE movieId IN
@@ -46,7 +46,7 @@
             #{movieId}
         </foreach>
     </select>
-    <select id="getLinks" resultType="com.betarec.pojo.Link">
+    <select id="getLinks" resultType="com.betarec.data.pojo.Link">
         SELECT *
         FROM links
         WHERE movieId IN
@@ -54,7 +54,7 @@
             #{movieId}
         </foreach>
     </select>
-    <select id="getGenomeTags" resultType="com.betarec.pojo.GenomeTag">
+    <select id="getGenomeTags" resultType="com.betarec.data.pojo.GenomeTag">
         SELECT *
         FROM genome_tags
         WHERE tagId IN
@@ -63,37 +63,37 @@
         </foreach>
     </select>
 
-    <select id="getGenomeScoresByMovieId" parameterType="int" resultType="com.betarec.pojo.GenomeScore">
+    <select id="getGenomeScoresByMovieId" parameterType="int" resultType="com.betarec.data.pojo.GenomeScore">
         SELECT *
         FROM genome_scores
         WHERE movieId = #{movieId};
     </select>
 
-    <select id="getGenomeScoresByTagId" parameterType="int" resultType="com.betarec.pojo.GenomeScore">
+    <select id="getGenomeScoresByTagId" parameterType="int" resultType="com.betarec.data.pojo.GenomeScore">
         SELECT *
         FROM genome_scores
         WHERE tagId = #{tagId};
     </select>
 
-    <select id = "getRatingsByUserId" parameterType="int" resultType="com.betarec.pojo.Rating">
+    <select id = "getRatingsByUserId" parameterType="int" resultType="com.betarec.data.pojo.Rating">
         SELECT *
         FROM ratings
         WHERE userId = ${userId}
     </select>
 
-    <select id = "getRatingsByMovieId" parameterType="int" resultType="com.betarec.pojo.Rating">
+    <select id = "getRatingsByMovieId" parameterType="int" resultType="com.betarec.data.pojo.Rating">
         SELECT *
         FROM ratings
         WHERE movieId = ${userId}
     </select>
 
-    <select id="getTagsByUserId" parameterType="int" resultType="com.betarec.pojo.Tag">
+    <select id="getTagsByUserId" parameterType="int" resultType="com.betarec.data.pojo.Tag">
         SELECT *
         FROM tags
         WHERE userId = ${userId}
     </select>
 
-    <select id="getTagsByMovieId" parameterType="int" resultType="com.betarec.pojo.Tag">
+    <select id="getTagsByMovieId" parameterType="int" resultType="com.betarec.data.pojo.Tag">
         SELECT *
         FROM tags
         WHERE movieId = ${movieId}

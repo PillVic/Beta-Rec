@@ -1,7 +1,6 @@
-package com.betarec.pojo;
+package com.betarec.data.pojo;
 
 import com.betarec.Base;
-import com.betarec.data.DbWriter;
 import com.betarec.data.Resource;
 import com.betarec.utils.ParseFile;
 

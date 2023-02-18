@@ -1,6 +1,6 @@
-import com.betarec.data.DbReader;
+import com.betarec.data.dao.DbReader;
 import com.betarec.data.Resource;
-import com.betarec.pojo.*;
+import com.betarec.data.pojo.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

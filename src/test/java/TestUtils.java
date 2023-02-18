@@ -1,4 +1,4 @@
-import com.betarec.pojo.Movie;
+import com.betarec.data.pojo.Movie;
 import com.betarec.utils.Ticker;
 import org.junit.Test;
 import org.slf4j.Logger;
