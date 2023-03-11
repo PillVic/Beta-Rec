@@ -1,6 +1,6 @@
 package com.betarec.data;
 
-import com.betarec.JavaConfig;
+import com.betarec.config.JavaConfig;
 import com.betarec.data.dao.DbReader;
 import com.betarec.data.dao.DbWriter;
 import org.apache.ibatis.session.SqlSession;
@@ -23,8 +23,8 @@ public class Resource {
 
     public Resource() {
         this.utilPool = new ThreadPoolExecutor(THREAD_SIZE, THREAD_SIZE * 2, 10, TimeUnit.SECONDS, new LinkedBlockingDeque<>(THREAD_SIZE));
-        this.dbReader = SqlFactory.getSqlSession(false, true).getMapper(DbReader.class);
-        this.dbWriter = SqlFactory.getSqlSession(true, true).getMapper(DbWriter.class);
+        this.dbReader = SqlHelper.getDbReader();
+        this.dbWriter = SqlHelper.getDbWriter(true);
     }
 
     public static Resource getResource() {
@@ -42,10 +42,7 @@ public class Resource {
      * @author neovic
      */
     public static void batchInsert(BiConsumer<DbWriter, List<String>> consumer, List<String> lines) {
-        SqlSession sqlSession = SqlFactory.getSqlSession(false, false);
-        DbWriter dbWriter1 = sqlSession.getMapper(DbWriter.class);
+        DbWriter dbWriter1 = SqlHelper.getDbWriter(true);
         consumer.accept(dbWriter1, lines);
-        sqlSession.commit();
-        sqlSession.close();
     }
 }
