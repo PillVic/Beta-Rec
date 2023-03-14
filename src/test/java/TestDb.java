@@ -1,6 +1,6 @@
 import com.betarec.data.Resource;
 import com.betarec.data.dao.DbReader;
-import com.betarec.data.pojo.*;
+import gen.data.pojo.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class TestDb {
     private static final Logger logger = LoggerFactory.getLogger(TestDb.class);
-    DbReader dbReader = Resource.getResource().dbReader;
+    DbReader dbReader = new Resource().dbReader;
 
 
     @Test
@@ -48,6 +48,23 @@ public class TestDb {
         int endUserId = 10;
         logger.info("beginUserId:{}, endUserId:{}, userIds:{}",
                 beginUserId, endUserId, dbReader.getUserIds(beginUserId, endUserId));
+    }
+
+    @Test
+    public void testGetUsersRatings() {
+        List<Integer> userIds = List.of(1, 2, 3);
+        List<Rating> ratings = dbReader.getUsersRatings(userIds);
+        for (Rating rating : ratings) {
+            logger.info("{}", rating);
+        }
+    }
+
+    @Test
+    public void testGetRangeMovies(){
+        Map<Integer, Movie> movieMap = dbReader.getRangeMovies(1, 100);
+        for(Integer movieId: movieMap.keySet()){
+            logger.info("movie:{}", movieMap.get(movieId));
+        }
     }
 
     @Test

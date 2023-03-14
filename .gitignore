@@ -1,3 +1,5 @@
 .idea/
 target/
 Data/
+gen-java/
+gen-py/

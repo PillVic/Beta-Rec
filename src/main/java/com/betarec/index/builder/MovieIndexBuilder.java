@@ -3,9 +3,10 @@ package com.betarec.index.builder;
 import com.betarec.data.dao.DbReader;
 import com.betarec.data.Resource;
 import com.betarec.index.MovieWrapper;
-import com.betarec.data.pojo.GenomeScore;
-import com.betarec.data.pojo.Movie;
-import com.betarec.data.pojo.Rating;
+import com.betarec.utils.ArgMainBase;
+import gen.data.pojo.GenomeScore;
+import gen.data.pojo.Movie;
+import gen.data.pojo.Rating;
 import com.betarec.utils.StatCount;
 import com.betarec.utils.Ticker;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,6 +15,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.MMapDirectory;
+import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +26,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
-public class MovieIndexBuilder implements Runnable {
+public class MovieIndexBuilder extends ArgMainBase {
+    @Option(name = "-batchSize", required = false, usage = "write batch")
     public int batchSize = 200;
+
+    @Option(name = "-index", required = false, usage = "movie index path")
+    public static String MOVIE_INDEX_DIR = "Data/index/movie";
+
+    @Option(name = "-threads", required = false, usage = "write index thread")
     public int threads = 20;
 
-    public static String MOVIE_INDEX_DIR = "Data/index/movieIndex";
     private static final Logger logger = LoggerFactory.getLogger(MovieIndexBuilder.class);
     private IndexWriter indexWriter;
     private MMapDirectory directory;
@@ -37,23 +44,21 @@ public class MovieIndexBuilder implements Runnable {
     @Override
     public void run() {
         try {
-            r = Resource.getResource();
+            r = new Resource();
             initIndexWriter();
-            DbReader dbReader = Resource.getResource().dbReader;
             ExecutorService executor = Executors.newFixedThreadPool(threads);
             StatCount statCount = new StatCount();
 
-            int minMovieId = dbReader.getMinMovieId();
-            int maxMovieId = dbReader.getMaxMovieId();
+            logger.info("start write index");
+            int minMovieId = r.dbReader.getMinMovieId();
+            int maxMovieId = r.dbReader.getMaxMovieId();
+            logger.info("minMovieId:{}, maxMovieId:{}", minMovieId, maxMovieId);
             for (int i = minMovieId; i <= maxMovieId; i += batchSize) {
                 final int beginMovieId = i;
                 final int endMovieId = i + batchSize;
-                executor.submit(() -> {
-                    indexMovieRange(beginMovieId, endMovieId, statCount);
-                });
+                executor.submit(() -> indexMovieRange(beginMovieId, endMovieId, statCount));
             }
-            executor.shutdown();
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+            executor.close();
             logger.info("write index done, statCount:{}", statCount);
             indexWriter.commit();
             indexWriter.close();
@@ -79,9 +84,10 @@ public class MovieIndexBuilder implements Runnable {
         try {
             Ticker ticker = new Ticker();
             List<Integer> movieIds = r.dbReader.getMovieIds(beginMovieId, endMovieId);
-            if(CollectionUtils.isEmpty(movieIds)){
+            if (CollectionUtils.isEmpty(movieIds)) {
                 return;
             }
+            logger.info("write db:{}->{}", beginMovieId, endMovieId);
             Map<Integer, Movie> movieMap = r.dbReader.getMovies(movieIds);
             Map<Integer, List<GenomeScore>> genomeScoresMap = new HashMap<>(movieIds.size());
             Map<Integer, List<Rating>> ratingsMap = new HashMap<>(movieIds.size());
@@ -108,12 +114,11 @@ public class MovieIndexBuilder implements Runnable {
             ticker.tick("commit");
             logger.info("indexMovieRange {},{}, ticker:{}", beginMovieId, endMovieId, ticker);
         } catch (Exception e) {
-            logger.error("indexMovieRange ERROR {}, {}", beginMovieId, endMovieId, e);
+            logger.error("indexMovieRange ERROR begin:{}, endMovieId:{}", beginMovieId, endMovieId, e);
         }
     }
 
     public static void main(String[] args) {
-        MovieIndexBuilder builder = new MovieIndexBuilder();
-        builder.run();
+        new MovieIndexBuilder().parseArgsAndRun(args);
     }
 }

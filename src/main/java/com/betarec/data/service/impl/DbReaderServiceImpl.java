@@ -1,8 +1,9 @@
 package com.betarec.data.service.impl;
 
+import com.betarec.data.Resource;
 import com.betarec.data.dao.DbReader;
 import com.betarec.data.service.DbReaderService;
-import com.betarec.data.pojo.*;
+import gen.data.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,10 @@ import java.util.Map;
 @Repository
 public class DbReaderServiceImpl implements DbReaderService {
     @Autowired
-    private DbReader dbReader;
+    private final DbReader dbReader;
+    public DbReaderServiceImpl(Resource r){
+        this.dbReader = r.dbReader;
+    }
 
     @Override
     public int getMaxMovieId() {
