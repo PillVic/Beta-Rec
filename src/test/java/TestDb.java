@@ -1,6 +1,10 @@
+import com.betarec.data.SqlHelper;
 import com.betarec.data.dao.DbReader;
-import com.betarec.data.Resource;
 import com.betarec.data.pojo.*;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +12,10 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
+
 public class TestDb {
     private static final Logger logger = LoggerFactory.getLogger(TestDb.class);
-    DbReader dbReader = Resource.getResource().dbReader;
+    DbReader dbReader = SqlHelper.getDbReader();
 
 
     @Test
