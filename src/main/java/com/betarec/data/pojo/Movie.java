@@ -50,7 +50,7 @@ public class Movie extends Base {
             begin = yearMatcher.start();
         }
         this.year = Integer.parseInt(t);
-        this.title = v[1].substring(0, begin).trim();
+        this.title = v[1].substring(0, begin-1).trim();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class Movie extends Base {
 
     public static void buildMovieDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + MOVIE_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
+            Resource.getResource().batchInsert((dbWriter, lines) -> {
                 List<Movie> movies = lines.stream().map(Movie::new).collect(Collectors.toList());
                 dbWriter.insertMovies(movies);
             }, lst);

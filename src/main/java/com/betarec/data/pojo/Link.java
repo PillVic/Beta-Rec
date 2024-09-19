@@ -43,7 +43,7 @@ public class Link extends Base {
 
     public static void buildLinkDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + LINK_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
+            Resource.getResource().batchInsert((dbWriter, lines) -> {
                 List<Link> links = lines.stream().map(Link::new).collect(Collectors.toList());
                 dbWriter.insertLinks(links);
             }, lst);

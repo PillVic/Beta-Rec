@@ -49,7 +49,7 @@ public class Tag extends Base {
 
     public static void buildTagDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + TAG_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
+            Resource.getResource().batchInsert((dbWriter, lines) -> {
                 List<Tag> tags = lines.stream().map(Tag::new).collect(Collectors.toList());
                 dbWriter.insertTags(tags);
             }, lst);

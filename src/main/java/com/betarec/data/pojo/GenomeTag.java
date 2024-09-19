@@ -43,7 +43,7 @@ public class GenomeTag extends Base {
 
     public static void buildGenomeTagDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + GENOME_TAG_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
+            Resource.getResource().batchInsert((dbWriter, lines) -> {
                 List<GenomeTag> genomeTags = lines.stream().map(GenomeTag::new).collect(Collectors.toList());
                 dbWriter.insertGenomeTags(genomeTags);
             }, lst);

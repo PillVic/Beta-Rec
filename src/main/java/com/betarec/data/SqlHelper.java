@@ -26,7 +26,6 @@ public class SqlHelper {
             SqlSessionManager sqlSessionManager = SqlSessionManager.newInstance(inputStream);
             sqlSessionManager.startManagedSession();
 
-            sqlSessionManager.getMapper(DbWriter.class);
 
             return sqlSessionManager.getMapper(DbReader.class);
         } catch (Exception e) {
@@ -34,6 +33,20 @@ public class SqlHelper {
         }
         return null;
     }
+
+    public static SqlSessionManager getSqlSessionManager(){
+        try {
+            InputStream inputStream = Resources.getResourceAsStream(CONFIG_FILE);
+            SqlSessionManager sqlSessionManager = SqlSessionManager.newInstance(inputStream);
+            sqlSessionManager.startManagedSession();
+
+            return sqlSessionManager;
+        } catch (Exception e) {
+            logger.error("getSqlSessionManager ERROR", e);
+        }
+        return null;
+    }
+
 
     /**
      * 用配置文件获取写入mysql的接口
@@ -45,6 +58,7 @@ public class SqlHelper {
             sqlSessionManager.startManagedSession();
 
             sqlSessionManager.getMapper(DbWriter.class);
+            return sqlSessionManager.getMapper(DbWriter.class);
         } catch (Exception e) {
             logger.error("getDbWriter ERROR", e);
         }

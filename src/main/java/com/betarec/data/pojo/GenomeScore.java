@@ -30,7 +30,7 @@ public class GenomeScore extends Base {
 
     public static void buildGenomeScoreDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + GNOME_SCORE_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
+            Resource.getResource().batchInsert((dbWriter, lines) -> {
                 List<GenomeScore> genomeScores = lst.stream().map(GenomeScore::new).toList();
                 dbWriter.insertGenomeScores(genomeScores);
             }, lst);

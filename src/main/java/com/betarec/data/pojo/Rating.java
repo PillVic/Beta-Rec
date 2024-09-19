@@ -36,7 +36,7 @@ public class Rating extends Base {
 
     public static void buildRatingsDb(ThreadPoolExecutor pool) {
         ParseFile.batchParse(COMMON_FILE_PATH + RATING_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
+            Resource.getResource().batchInsert((dbWriter, lines) -> {
                 List<Rating> ratings = lines.stream().map(Rating::new).toList();
                 dbWriter.insertRatings(ratings);
             }, lst);

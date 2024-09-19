@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -59,6 +60,26 @@ public class ParseFile {
         } catch (Exception e) {
             logger.error("readFile error, fileName:{}", fileName, e);
         }
+    }
+
+    public static List<String>  readLines(String fileName, int lineNum){
+        List<String> lines = new ArrayList<>();
+        try{
+            InputStreamReader ir = new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(ir);
+            for(int i=0;i<lineNum;i++){
+                String line = br.readLine();
+                lines.add(line);
+            }
+
+            br.close();
+            logger.info("[{}]:BufferedReader close", fileName);
+            ir.close();
+            logger.info("[{}]:InputStreamReader close", fileName);
+        }catch (Exception e){
+            logger.error("readLines ERROR, fileName:{}", fileName, e);
+        }
+        return lines;
     }
 
     private static void parseLines(Consumer<List<String>> consumer,
