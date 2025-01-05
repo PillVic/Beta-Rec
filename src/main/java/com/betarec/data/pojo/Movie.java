@@ -1,13 +1,8 @@
 package com.betarec.data.pojo;
 
 import com.betarec.Base;
-import com.betarec.data.Resource;
-import com.betarec.utils.ParseFile;
 
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 import static com.betarec.utils.Flags.*;
 
@@ -23,8 +18,8 @@ public class Movie extends Base {
     public final String genres;
     public final int year;
 
-    public static final String MOVIE_FILE = "movies.csv";
     public static final String MOVIE_GENRES_SPLIT = "\\|";
+    public static final String EMPTY_GENRES = "(no genres listed)";
 
     public Movie(int movieId, String title, String genres, int year) {
         this.movieId = movieId;
@@ -41,35 +36,25 @@ public class Movie extends Base {
             v = line.split(",");
         }
         movieId = Integer.parseInt(v[0]);
-        genres = v[2].trim();
+        if (EMPTY_GENRES.equals(v[2].trim())) {
+            genres = "";
+        } else {
+            genres = v[2].trim();
+        }
         Matcher yearMatcher = YEAR_PATTERN.matcher(v[1]);
         int begin = v[1].length();
-        String t = "-1";
-        while (yearMatcher.find()) {
-            t = yearMatcher.group();
-            begin = yearMatcher.start();
+        if (yearMatcher.find()) {
+            String yearStr = yearMatcher.group();
+            this.year = Integer.parseInt(yearStr.substring(1, 5));
+            this.title = v[1].substring(0, v[1].indexOf(yearStr)).trim();
+        } else {
+            this.year = -1;
+            this.title = v[1].substring(0, begin).trim();
         }
-        this.year = Integer.parseInt(t);
-        this.title = v[1].substring(0, begin-1).trim();
     }
 
     @Override
     public int hashCode() {
         return movieId;
-    }
-
-    public static void buildMovieDb(ThreadPoolExecutor pool) {
-        ParseFile.batchParse(COMMON_FILE_PATH + MOVIE_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Movie> movies = lines.stream().map(Movie::new).collect(Collectors.toList());
-                dbWriter.insertMovies(movies);
-            }, lst);
-        }, pool);
-    }
-
-    public static void main(String[] args) {
-        ThreadPoolExecutor pool = Resource.buildThreadPool();
-        buildMovieDb(pool);
-        pool.shutdown();
     }
 }

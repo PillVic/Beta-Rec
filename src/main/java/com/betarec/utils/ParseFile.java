@@ -1,6 +1,7 @@
 package com.betarec.utils;
 
 import com.betarec.data.Resource;
+import com.betarec.data.pojo.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
@@ -16,6 +17,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+
+import static com.betarec.data.DataBuilder.MOVIE_FILE;
+import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
 public class ParseFile {
     private static final int QUEUE_SIZE = 10000;
@@ -62,12 +66,12 @@ public class ParseFile {
         }
     }
 
-    public static List<String>  readLines(String fileName, int lineNum){
+    public static List<String> readLines(String fileName, int lineNum) {
         List<String> lines = new ArrayList<>();
-        try{
+        try {
             InputStreamReader ir = new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(ir);
-            for(int i=0;i<lineNum;i++){
+            for (int i = 0; i < lineNum; i++) {
                 String line = br.readLine();
                 lines.add(line);
             }
@@ -76,7 +80,7 @@ public class ParseFile {
             logger.info("[{}]:BufferedReader close", fileName);
             ir.close();
             logger.info("[{}]:InputStreamReader close", fileName);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("readLines ERROR, fileName:{}", fileName, e);
         }
         return lines;
@@ -125,15 +129,20 @@ public class ParseFile {
                     while (!shutdown.get() || !queue.isEmpty()) {
                         int queueSize = queue.size();
                         for (int i = 0; i < queueSize; i++) {
-                            String line = queue.take();
-                            consumer.accept(line);
-                            consumeNum++;
+                            String line = "";
+                            try {
+                                line = queue.take();
+                                consumer.accept(line);
+                                consumeNum++;
+                            } catch (Exception e) {
+                                logger.error("parse consume error, line:{}, ", line, e);
+                            }
                         }
                         logger.info("queueSize:{}, consumeNum:{}", queueSize, consumeNum);
                     }
                     logger.info("consumeNum {}", consumeNum);
                 } catch (Exception e) {
-                    logger.error("parse consume error", e);
+                    logger.error("[Parse Exception]", e);
                 }
             });
             pool.shutdown();

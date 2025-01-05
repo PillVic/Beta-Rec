@@ -1,5 +1,4 @@
 import com.betarec.data.Resource;
-import com.betarec.data.SqlHelper;
 import com.betarec.data.dao.DbReader;
 import com.betarec.data.pojo.*;
 import org.junit.Test;

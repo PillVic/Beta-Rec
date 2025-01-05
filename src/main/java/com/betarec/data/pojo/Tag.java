@@ -46,19 +46,4 @@ public class Tag extends Base {
         this.tag = tag;
         this.timestamp = timestamp;
     }
-
-    public static void buildTagDb(ThreadPoolExecutor pool) {
-        ParseFile.batchParse(COMMON_FILE_PATH + TAG_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Tag> tags = lines.stream().map(Tag::new).collect(Collectors.toList());
-                dbWriter.insertTags(tags);
-            }, lst);
-        }, pool);
-    }
-
-    public static void main(String[] args) {
-        ThreadPoolExecutor pool = Resource.buildThreadPool();
-        buildTagDb(pool);
-        pool.shutdown();
-    }
 }

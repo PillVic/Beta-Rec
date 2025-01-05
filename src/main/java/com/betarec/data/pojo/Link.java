@@ -40,19 +40,4 @@ public class Link extends Base {
     public int hashCode() {
         return movieId;
     }
-
-    public static void buildLinkDb(ThreadPoolExecutor pool) {
-        ParseFile.batchParse(COMMON_FILE_PATH + LINK_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Link> links = lines.stream().map(Link::new).collect(Collectors.toList());
-                dbWriter.insertLinks(links);
-            }, lst);
-        }, pool);
-    }
-
-    public static void main(String[] args) {
-        ThreadPoolExecutor pool = Resource.buildThreadPool();
-        buildLinkDb(pool);
-        pool.shutdown();
-    }
 }
