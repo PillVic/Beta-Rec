@@ -1,7 +1,9 @@
 package com.betarec.recommend;
 
 import com.betarec.data.Resource;
+import com.betarec.data.UserMovieVectorMap;
 import com.betarec.recommend.recall.DocRecall;
+import com.betarec.recommend.sort.CoarseSort;
 import com.betarec.utils.ArgMainBase;
 import com.betarec.utils.Ticker;
 import org.apache.lucene.document.Document;
@@ -25,6 +27,12 @@ public class RecommendMain extends ArgMainBase {
     @Option(name = "-user_index_path", required = true, usage = "user lucene index path")
     public String userIndexPath;
 
+    @Option(name = "-user_vec_path", required = true, usage = "user vector path")
+    public String userVecPath;
+
+    @Option(name = "-movie_vec_path", required = true, usage = "movie vector path")
+    public String movieVecPath;
+
     @Option(name = "-userId", required = true, usage = "recommend usage")
     public int userId = -1;
 
@@ -43,28 +51,32 @@ public class RecommendMain extends ArgMainBase {
             IndexSearcher movieDocSearcher = Resource.getIndexSearcher(movieIndexPath);
             IndexSearcher userDocSearcher = Resource.getIndexSearcher(userIndexPath);
             Resource r = new Resource();
+            UserMovieVectorMap userMovieVectorMap = new UserMovieVectorMap(userVecPath, movieVecPath); //init static
+            CoarseSort coarseSort = new CoarseSort(userMovieVectorMap);
             ticker.tick("init");
 
             //recall:icf, ucf, basic(genres recall),
             Set<Integer> seenMovies = r.dbReader.getRatingsByUserId(userId).stream().map(t -> t.movieId).collect(Collectors.toSet());
             ticker.tick("get-seen-movies" + seenMovies.size());
 
-            List<Document> movieDocs = new DocRecall(userDocSearcher, movieDocSearcher).movieRecallByUserGenres(401, limit + seenMovies.size());
+            int recallLimit = limit * 5 + seenMovies.size();
+            List<Document> movieDocs = new DocRecall(userDocSearcher, movieDocSearcher).movieRecallByUserGenres(401, recallLimit);
             ticker.tick("recall-" + recallType + limit);
 
             //mask seen movie
             int beforeMaskedSize = movieDocs.size();
-            movieDocs.removeIf(t -> seenMovies.contains(Integer.parseInt(t.get(MOVIE_ID))));
+            movieDocs.removeIf(t -> seenMovies.contains(getMovieIdFromDoc(t)));
             ticker.tick("masked" + (movieDocs.size() - beforeMaskedSize));
 
             //coarse sort
-            //fixme
+            movieDocs = coarseSort.coarseTopN(userId, movieDocs, limit);
+            ticker.tick("coarse-sort" + limit);
 
             //sort
             //fixme
 
             for (Document document : movieDocs) {
-                logger.info("movieId:{}, movie genres:{}", document.get(MOVIE_ID), document.get(MOVIE_GENRES_ALL));
+                logger.info("movieId:{}, movie genres:{}", getMovieIdFromDoc(document), document.get(MOVIE_GENRES_ALL));
             }
             logger.info("recommend userId:{}, recallType:{}, limit:{}, ticker:{}", userId, recallType, limit, ticker);
         } catch (Exception e) {

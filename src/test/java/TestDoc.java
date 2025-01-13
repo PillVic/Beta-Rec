@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-import static com.betarec.index.MovieWrapper.MOVIE_GENRES;
-import static com.betarec.index.MovieWrapper.MOVIE_ID;
+import static com.betarec.index.MovieWrapper.*;
 import static com.betarec.index.UserWrapper.*;
 import static com.betarec.index.builder.MovieIndexBuilder.MOVIE_INDEX_DIR;
 import static com.betarec.index.builder.UserIndexBuilder.USER_INDEX_DIR;
@@ -61,7 +60,7 @@ public class TestDoc {
         TopDocs docs = movieDocSearcher.search(bq, 20);
         for (var doc : docs.scoreDocs) {
             Document document = movieDocSearcher.doc(doc.doc);
-            logger.info("movieId:{}, movie_genres:{}", document.get(MOVIE_ID), document.get(MOVIE_GENRES));
+            logger.info("movieId:{}, movie_genres:{}", getMovieIdFromDoc(document), document.get(MOVIE_GENRES));
         }
     }
 
