@@ -111,29 +111,31 @@ public class UserIndexBuilder extends ArgMainBase {
             Ticker ticker = new Ticker();
             List<Integer> userIds = r.dbReader.getUserIds(beginUserId, endUserId);
             List<Rating> ratings = r.dbReader.getUsersRatings(userIds);
+            ticker.tick("db");
 
             if (CollectionUtils.isEmpty(ratings)) {
                 statCount.count("empty-range");
             }
 
-            Map<Integer, List<Integer>> userMoviesIdsMap = ratings.stream().collect(Collectors.toMap(k -> k.userId, v -> new ArrayList<>(List.of(v.movieId)), (a, b) -> {
-                a.addAll(b);
-                return a;
-            }));
+            Map<Integer, List<Integer>> userMoviesIdsMap = ratings.stream()
+                    .collect(Collectors.toMap(k -> k.userId, v -> new ArrayList<>(List.of(v.movieId)),
+                            (a, b) -> {
+                                a.addAll(b);
+                                return a;
+                            }));
             for (Integer userId : userMoviesIdsMap.keySet()) {
                 List<Movie> movies = userMoviesIdsMap.getOrDefault(userId, Collections.emptyList())
                         .stream().map(movieId -> movieMap.get(movieId)).toList();
-                if (CollectionUtils.isEmpty(movies)) {
-                    statCount.count("empty-movie");
-                    continue;
+                if (movies.size() == 1) {
+                    statCount.count("single-movie-user");
                 }
                 UserWrapper userWrapper = new UserWrapper(userId).setSeenMovies(movies);
                 indexWriter.addDocument(userWrapper.getDoc());
                 statCount.count("user");
             }
 
-            ticker.tick("add-doc");
             indexWriter.commit();
+            ticker.tick("commit");
             logger.info("indexUserRange {},{}, ticker:{}", beginUserId, endUserId, ticker);
         } catch (Exception e) {
             logger.error("[indexMovieRange ERROR]: beginUserId:{}, endUserId:{}", beginUserId, endUserId, e);

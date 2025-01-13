@@ -9,10 +9,8 @@ set -xeuo pipefail
 
 JAR="beta-rec-jar-with-dependencies.jar"
 
-JVM_ARGS="-XX:+UseZGC"
 
-
-java "${JVM_ARGS}" \
+java -XX:+UseZGC -Xms1024M -Xms1024M \
     -cp "${JAR}" com.betarec.index.builder.MovieIndexBuilder \
     -threads 5 \
     -index "./index/movie" \
