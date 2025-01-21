@@ -33,19 +33,4 @@ public class Rating extends Base {
         this.timestamp = timestamp;
 
     }
-
-    public static void buildRatingsDb(ThreadPoolExecutor pool) {
-        ParseFile.batchParse(COMMON_FILE_PATH + RATING_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
-                List<Rating> ratings = lines.stream().map(Rating::new).toList();
-                dbWriter.insertRatings(ratings);
-            }, lst);
-        }, pool);
-    }
-
-    public static void main(String[] args) {
-        ThreadPoolExecutor pool = Resource.buildThreadPool();
-        Rating.buildRatingsDb(pool);
-        pool.shutdown();
-    }
 }

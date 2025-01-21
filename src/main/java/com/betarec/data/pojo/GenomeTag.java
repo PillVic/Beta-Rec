@@ -40,19 +40,4 @@ public class GenomeTag extends Base {
     public int hashCode() {
         return tagId;
     }
-
-    public static void buildGenomeTagDb(ThreadPoolExecutor pool) {
-        ParseFile.batchParse(COMMON_FILE_PATH + GENOME_TAG_FILE, lst -> {
-            Resource.batchInsert((dbWriter, lines) -> {
-                List<GenomeTag> genomeTags = lines.stream().map(GenomeTag::new).collect(Collectors.toList());
-                dbWriter.insertGenomeTags(genomeTags);
-            }, lst);
-        }, pool);
-    }
-
-    public static void main(String[] args) {
-        ThreadPoolExecutor pool = Resource.buildThreadPool();
-        buildGenomeTagDb(pool);
-        pool.shutdown();
-    }
 }
