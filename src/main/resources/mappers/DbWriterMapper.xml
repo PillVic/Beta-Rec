@@ -4,19 +4,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.betarec.data.dao.DbWriter">
-    <insert id="insertGenomeTag" parameterType="com.betarec.data.pojo.GenomeTag">
+    <insert id="insertGenomeTag" parameterType="gen.data.pojo.GenomeTag">
         INSERT INTO MovieLens.genome_tags (tagId, tag)
         VALUES (#{tagId}, #{tag});
     </insert>
-    <insert id="insertLink" parameterType="com.betarec.data.pojo.Link">
+    <insert id="insertLink" parameterType="gen.data.pojo.Link">
         INSERT INTO MovieLens.links (movieId, imdbId, tmdbId)
         VALUES (#{movieId}, #{imdbId}, #{tmdbId});
     </insert>
-    <insert id="insertMovie" parameterType="com.betarec.data.pojo.Movie">
+    <insert id="insertMovie" parameterType="gen.data.pojo.Movie">
         INSERT INTO MovieLens.movies (movieId, title, genres, year)
         VALUES (#{movieId}, #{title}, #{genres}, #{year});
     </insert>
-    <insert id="insertTag" parameterType="com.betarec.data.pojo.Tag">
+    <insert id="insertTag" parameterType="gen.data.pojo.Tag">
         INSERT INTO MovieLens.tags (userId, movieId, tag, timestamp)
         VALUES (#{userId}, #{movieId}, #{tag}, #{timestamp})
         ON DUPLICATE KEY

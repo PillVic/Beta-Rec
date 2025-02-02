@@ -38,7 +38,23 @@
             AND userId &lt;= #{endUserId}
     </select>
 
-    <select id="getMovies" resultType="com.betarec.data.pojo.Movie">
+    <select id="getUsersRatings" resultType="gen.data.pojo.Rating">
+        SELECT userId, movieId, rating, UNIX_TIMESTAMP(timestamp) timestamp
+        FROM ratings
+        WHERE userId IN
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
+
+    <select id="getRangeMovies" resultType="gen.data.pojo.Movie">
+        SELECT movieId, title, genres, year
+        FROM movies
+        WHERE movieId >= #{beginMovieId}  AND movieId &lt; #{endMovieId}
+    </select>
+
+
+    <select id="getMovies" resultType="gen.data.pojo.Movie">
         SELECT *
         FROM movies
         WHERE movieId IN
@@ -46,7 +62,7 @@
             #{movieId}
         </foreach>
     </select>
-    <select id="getLinks" resultType="com.betarec.data.pojo.Link">
+    <select id="getLinks" resultType="gen.data.pojo.Link">
         SELECT *
         FROM links
         WHERE movieId IN
@@ -54,7 +70,7 @@
             #{movieId}
         </foreach>
     </select>
-    <select id="getGenomeTags" resultType="com.betarec.data.pojo.GenomeTag">
+    <select id="getGenomeTags" resultType="gen.data.pojo.GenomeTag">
         SELECT *
         FROM genome_tags
         WHERE tagId IN
@@ -63,38 +79,38 @@
         </foreach>
     </select>
 
-    <select id="getGenomeScoresByMovieId" parameterType="int" resultType="com.betarec.data.pojo.GenomeScore">
+    <select id="getGenomeScoresByMovieId" parameterType="int" resultType="gen.data.pojo.GenomeScore">
         SELECT *
         FROM genome_scores
         WHERE movieId = #{movieId};
     </select>
 
-    <select id="getGenomeScoresByTagId" parameterType="int" resultType="com.betarec.data.pojo.GenomeScore">
+    <select id="getGenomeScoresByTagId" parameterType="int" resultType="gen.data.pojo.GenomeScore">
         SELECT *
         FROM genome_scores
         WHERE tagId = #{tagId};
     </select>
 
-    <select id = "getRatingsByUserId" parameterType="int" resultType="com.betarec.data.pojo.Rating">
-        SELECT *
+    <select id = "getRatingsByUserId" parameterType="int" resultType="gen.data.pojo.Rating">
+        SELECT userId, movieId, rating, UNIX_TIMESTAMP(timestamp)
         FROM ratings
         WHERE userId = ${userId}
     </select>
 
-    <select id = "getRatingsByMovieId" parameterType="int" resultType="com.betarec.data.pojo.Rating">
-        SELECT *
+    <select id = "getRatingsByMovieId" parameterType="int" resultType="gen.data.pojo.Rating">
+        SELECT userId, movieId, UNIX_TIMESTAMP(timestamp)
         FROM ratings
         WHERE movieId = ${userId}
     </select>
 
-    <select id="getTagsByUserId" parameterType="int" resultType="com.betarec.data.pojo.Tag">
-        SELECT *
+    <select id="getTagsByUserId" parameterType="int" resultType="gen.data.pojo.Tag">
+        SELECT userId, movieId, tag, UNIX_TIMESTAMP(timestamp)
         FROM tags
         WHERE userId = ${userId}
     </select>
 
-    <select id="getTagsByMovieId" parameterType="int" resultType="com.betarec.data.pojo.Tag">
-        SELECT *
+    <select id="getTagsByMovieId" parameterType="int" resultType="gen.data.pojo.Tag">
+        SELECT userId, movieId, tag, UNIX_TIMESTAMP(timestamp)
         FROM tags
         WHERE movieId = ${movieId}
     </select>

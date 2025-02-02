@@ -1,8 +1,9 @@
 package com.betarec.data;
 
-import com.betarec.data.pojo.*;
+import com.betarec.data.pojo.PojoParser;
 import com.betarec.utils.ArgMainBase;
 import com.betarec.utils.ParseFile;
+import gen.data.pojo.*;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class DataBuilder extends ArgMainBase {
 
 
     @Option(name="-mode", required=true, usage = "write which")
-    private static String mode;
+    private String mode = "none";
 
 
     public static final String MOVIE_FILE = "movies.csv";
@@ -31,7 +32,10 @@ public class DataBuilder extends ArgMainBase {
     public static final String GNOME_SCORE_FILE = "genome-scores.csv";
     public static final String RATING_FILE = "ratings.csv";
 
-    public static void buildDb(ThreadPoolExecutor pool) {
+    private Resource r;
+
+    public void buildDb(ThreadPoolExecutor pool) {
+        Resource r = new Resource();
         if(mode.equals("all") || mode.equals("movie")){
             buildMovieDb(pool);
         }
@@ -53,61 +57,61 @@ public class DataBuilder extends ArgMainBase {
 
     }
 
-    private static void buildMovieDb(ThreadPoolExecutor pool){
+    private void buildMovieDb(ThreadPoolExecutor pool){
         logger.info("[BUILD DB]:MovieLens.movies");
         ParseFile.batchParse(COMMON_FILE_PATH + MOVIE_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Movie> movies = lines.stream().map(Movie::new).collect(Collectors.toList());
+            new Resource().batchInsert((dbWriter, lines) -> {
+                List<Movie> movies = lines.stream().map(PojoParser::parseMovie).collect(Collectors.toList());
                 dbWriter.insertMovies(movies);
             }, lst);
         }, pool);
     }
 
-    private static void buildLinkDb(ThreadPoolExecutor pool){
+    private void buildLinkDb(ThreadPoolExecutor pool){
         logger.info("[BUILD DB]:MovieLens.links");
         ParseFile.batchParse(COMMON_FILE_PATH + LINK_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Link> links = lines.stream().map(Link::new).collect(Collectors.toList());
+            new Resource().batchInsert((dbWriter, lines) -> {
+                List<Link> links = lines.stream().map(PojoParser::parseLink).collect(Collectors.toList());
                 dbWriter.insertLinks(links);
             }, lst);
         }, pool);
     }
 
-    private static void buildTagDb(ThreadPoolExecutor pool){
+    private void buildTagDb(ThreadPoolExecutor pool){
         logger.info("[BUILD DB]:MovieLens.tags");
         ParseFile.batchParse(COMMON_FILE_PATH + TAG_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Tag> tags = lines.stream().map(Tag::new).collect(Collectors.toList());
+            r.batchInsert((dbWriter, lines) -> {
+                List<Tag> tags = lines.stream().map(PojoParser::parseTag).collect(Collectors.toList());
                 dbWriter.insertTags(tags);
             }, lst);
         }, pool);
     }
 
-    private static void buildGenomeTagDb(ThreadPoolExecutor pool) {
+    private void buildGenomeTagDb(ThreadPoolExecutor pool) {
         logger.info("[BUILD DB]:MovieLens.genome_tags");
         ParseFile.batchParse(COMMON_FILE_PATH + GENOME_TAG_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<GenomeTag> genomeTags = lines.stream().map(GenomeTag::new).collect(Collectors.toList());
+            r.batchInsert((dbWriter, lines) -> {
+                List<GenomeTag> genomeTags = lines.stream().map(PojoParser::parseGenomeTag).collect(Collectors.toList());
                 dbWriter.insertGenomeTags(genomeTags);
             }, lst);
         }, pool);
     }
 
-    private static void buildGenomeScoreDb(ThreadPoolExecutor pool) {
+    private void buildGenomeScoreDb(ThreadPoolExecutor pool) {
         logger.info("[BUILD DB]:MovieLens.genome_scores");
         ParseFile.batchParse(COMMON_FILE_PATH + GNOME_SCORE_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<GenomeScore> genomeScores = lst.stream().map(GenomeScore::new).toList();
+            r.batchInsert((dbWriter, lines) -> {
+                List<GenomeScore> genomeScores = lst.stream().map(PojoParser::parseGenomeScore).toList();
                 dbWriter.insertGenomeScores(genomeScores);
             }, lst);
         }, pool);
     }
 
-    private static void buildRatingsDb(ThreadPoolExecutor pool) {
+    private void buildRatingsDb(ThreadPoolExecutor pool) {
         logger.info("[BUILD DB]:MovieLens.ratings");
         ParseFile.batchParse(COMMON_FILE_PATH + RATING_FILE, lst -> {
-            Resource.getResource().batchInsert((dbWriter, lines) -> {
-                List<Rating> ratings = lines.stream().map(Rating::new).toList();
+            r.batchInsert((dbWriter, lines) -> {
+                List<Rating> ratings = lines.stream().map(PojoParser::parseRating).toList();
                 dbWriter.insertRatings(ratings);
             }, lst);
         }, pool);
@@ -116,6 +120,7 @@ public class DataBuilder extends ArgMainBase {
     @Override
     public void run() {
         logger.info("mode:{}", mode);
+        r =  new Resource();
         ThreadPoolExecutor pool = Resource.buildThreadPool();
         buildDb(pool);
         pool.shutdown();

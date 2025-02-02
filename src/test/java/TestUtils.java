@@ -1,4 +1,5 @@
-import com.betarec.data.pojo.Movie;
+import com.betarec.data.pojo.PojoParser;
+import gen.data.pojo.Movie;
 import com.betarec.utils.Ticker;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,9 +15,8 @@ public class TestUtils {
     Logger logger = LoggerFactory.getLogger(TestUtils.class);
     @Test
     public void testToString(){
-        Movie movie = new Movie("1,Toy Story (1995),Adventure|Animation|Children|Comedy|Fantasy");
-        System.out.println(toJsonString(movie));
-        System.out.println(toJsonStringV2(movie));
+        Movie movie = PojoParser.parseMovie("1,Toy Story (1995),Adventure|Animation|Children|Comedy|Fantasy");
+        logger.info("movie:{}", movie);
     }
 
     @Test

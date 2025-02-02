@@ -1,6 +1,6 @@
 package com.betarec.data.dao;
 
-import com.betarec.data.pojo.*;
+import gen.data.pojo.*;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,6 +23,10 @@ public interface DbReader {
 
     List<Integer> getUserIds(@Param("beginUserId") int beginUserId, @Param("endUserId") int endUserId);
 
+    List<Rating> getUsersRatings(@Param("userIds") List<Integer> userIds);
+
+    @MapKey("movieId")
+    Map<Integer, Movie> getRangeMovies(@Param("beginMovieId") int beginMovieId, @Param("endMovieId") int endMovieId);
 
     @MapKey("movieId")
     Map<Integer, Movie> getMovies(@Param("movieIds") List<Integer> movieIds);

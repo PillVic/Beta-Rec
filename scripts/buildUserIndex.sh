@@ -13,7 +13,8 @@ JVM_ARGS="-XX:+UseZGC"
 
 
 java "${JVM_ARGS}" \
-    -cp "${JAR}" com.betarec.index.builder.MovieIndexBuilder \
+    -cp "${JAR}" com.betarec.index.builder.UserIndexBuilder \
     -threads 5 \
-    -index "./index/movie" \
-    -batchSize 400 \
+    -index "./index/user" \
+    -movieBatchSize 400 \
+    -userBatchSize 100 \

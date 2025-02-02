@@ -1,7 +1,6 @@
 package com.betarec.utils;
 
 import com.betarec.data.Resource;
-import com.betarec.data.pojo.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
@@ -10,16 +9,12 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
-
-import static com.betarec.data.DataBuilder.MOVIE_FILE;
-import static com.betarec.utils.Flags.COMMON_FILE_PATH;
 
 public class ParseFile {
     private static final int QUEUE_SIZE = 10000;

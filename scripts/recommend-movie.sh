@@ -11,9 +11,9 @@ JAR="beta-rec-jar-with-dependencies.jar"
 
 JVM_ARGS="-XX:+UseZGC"
 
-
 java "${JVM_ARGS}" \
-    -cp "${JAR}" com.betarec.index.builder.MovieIndexBuilder \
-    -threads 5 \
-    -index "./index/movie" \
-    -batchSize 400 \
+    -cp "${JAR}" com.betarec.recommend.RecommendMain \
+    -userId 401 \
+    -movie_index_path "./index/movie" \
+    -user_index_path "./index/user" \
+    -limit 20
