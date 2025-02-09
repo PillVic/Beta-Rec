@@ -75,4 +75,7 @@ public class MovieWrapper {
         return doc;
     }
 
+    public static int getMovieIdFromDoc(Document movieDoc) {
+        return Integer.parseInt(movieDoc.get(MOVIE_ID));
+    }
 }
