@@ -13,7 +13,7 @@ import static org.nd4j.linalg.ops.transforms.Transforms.cosineSim;
 
 public class TestModel {
     Logger logger = LoggerFactory.getLogger((TestModel.class));
-    private UserMovieVectorMap userMovieVectorMap = new UserMovieVectorMap(USER_VECTOR_FILE, MOVIE_VECTOR_FILE);
+    private final UserMovieVectorMap userMovieVectorMap = new UserMovieVectorMap(USER_VECTOR_FILE, MOVIE_VECTOR_FILE);
 
     @Test
     public void testGetUserVecs() {

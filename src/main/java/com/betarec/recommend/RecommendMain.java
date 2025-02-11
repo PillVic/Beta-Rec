@@ -2,10 +2,14 @@ package com.betarec.recommend;
 
 import com.betarec.data.Resource;
 import com.betarec.data.UserMovieVectorMap;
+import com.betarec.index.MovieWrapper;
 import com.betarec.recommend.recall.DocRecall;
 import com.betarec.recommend.sort.CoarseSort;
 import com.betarec.utils.ArgMainBase;
 import com.betarec.utils.Ticker;
+import gen.service.ModelReq;
+import gen.service.ModelResp;
+import gen.service.ModelService;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
 import org.kohsuke.args4j.Option;
@@ -17,6 +21,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.betarec.index.MovieWrapper.*;
+import static com.betarec.recommend.sort.CoarseSort.modelRankTopN;
+import static com.betarec.service.ModelServiceClientHelper.buildModelServiceClient;
+import static com.betarec.utils.Flags.LOCAL_SERVER;
 
 public class RecommendMain extends ArgMainBase {
     private static final Logger logger = LoggerFactory.getLogger(RecommendMain.class);
@@ -32,6 +39,12 @@ public class RecommendMain extends ArgMainBase {
 
     @Option(name = "-movie_vec_path", required = true, usage = "movie vector path")
     public String movieVecPath;
+
+    @Option(name = "-model-service-port", required = true, usage = "model service port number")
+    public int modelServicePort;
+
+    @Option(name = "-rank-model", required = true, usage = "rank model name")
+    public String rankModel;
 
     @Option(name = "-userId", required = true, usage = "recommend usage")
     public int userId = -1;
@@ -49,19 +62,24 @@ public class RecommendMain extends ArgMainBase {
             Ticker ticker = new Ticker();
 
             IndexSearcher movieDocSearcher = Resource.getIndexSearcher(movieIndexPath);
+            ticker.tick("load-movie-index");
             IndexSearcher userDocSearcher = Resource.getIndexSearcher(userIndexPath);
-            Resource r = new Resource();
-            UserMovieVectorMap userMovieVectorMap = new UserMovieVectorMap(userVecPath, movieVecPath); //init static
+            ticker.tick("load-user-index");
+            UserMovieVectorMap userMovieVectorMap = new UserMovieVectorMap(userVecPath, movieVecPath);
+            ticker.tick("load-user-movie-npy");
             CoarseSort coarseSort = new CoarseSort(userMovieVectorMap);
-            ticker.tick("init");
+            Resource r = new Resource();
+            ticker.tick("init-resource");
+            ModelService.Client modelServiceClient = buildModelServiceClient(LOCAL_SERVER, modelServicePort);
+            ticker.tick("init-thrift-client");
 
             //recall:icf, ucf, basic(genres recall),
             Set<Integer> seenMovies = r.dbReader.getRatingsByUserId(userId).stream().map(t -> t.movieId).collect(Collectors.toSet());
             ticker.tick("get-seen-movies" + seenMovies.size());
 
-            int recallLimit = limit * 5 + seenMovies.size();
+            int recallLimit = limit * 100 + seenMovies.size();
             List<Document> movieDocs = new DocRecall(userDocSearcher, movieDocSearcher).movieRecallByUserGenres(401, recallLimit);
-            ticker.tick("recall-" + recallType + limit);
+            ticker.tick("recall-" + recallType + recallLimit);
 
             //mask seen movie
             int beforeMaskedSize = movieDocs.size();
@@ -69,11 +87,17 @@ public class RecommendMain extends ArgMainBase {
             ticker.tick("masked" + (movieDocs.size() - beforeMaskedSize));
 
             //coarse sort
-            movieDocs = coarseSort.coarseTopN(userId, movieDocs, limit);
-            ticker.tick("coarse-sort" + limit);
+            int coarseLimit = limit * 10;
+            movieDocs = coarseSort.coarseTopN(userId, movieDocs, coarseLimit);
+            ticker.tick("coarse-sort" + coarseLimit);
 
             //sort
-            //fixme
+            ModelReq req = new ModelReq(userId, movieDocs.stream().map(MovieWrapper::getMovieIdFromDoc).toList(), rankModel);
+            ModelResp resp = modelServiceClient.movieModelRank(req);
+            ticker.tick("thrift-rpc");
+            movieDocs = modelRankTopN(movieDocs, limit, resp);
+            ticker.tick("rank-top" + limit);
+            logger.info("[movieModelRank]:{}", resp);
 
             for (Document document : movieDocs) {
                 logger.info("movieId:{}, movie genres:{}", getMovieIdFromDoc(document), document.get(MOVIE_GENRES_ALL));

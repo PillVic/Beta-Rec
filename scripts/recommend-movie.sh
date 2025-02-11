@@ -16,6 +16,8 @@ java "${JVM_ARGS}" \
     -userId 401 \
     -movie_index_path "./index/movie" \
     -user_index_path "./index/user" \
+    -model-service-port 8848 \
+    -rank-model "random" \
     -user_vec_path "./vecs/AUTO_REC_MLP_USER_VECS.npy" \
     -movie_vec_path "./vecs/AUTO_REC_MLP_MOVIE_VECS.npy" \
     -limit 20

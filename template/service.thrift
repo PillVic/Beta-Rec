@@ -2,16 +2,23 @@
 namespace py gen.service
 namespace java gen.service
 
-struct EchoReq {
+struct ModelReq {
     1: required i32 userId
-    2: required string message
+    2: required list<i32> movieIds
+    3: required string modelName
 }
 
-struct EchoResp {
-    1: required i32 userId
-    2: required string response
+struct MovieRankItem{
+    1: required i32 movieId
+    2: required double score
 }
 
-service Service{
-    EchoResp echo(1: EchoReq req)
+struct ModelResp {
+    1: required i32 userId
+    2: required list<MovieRankItem> movieRanks
+}
+
+service ModelService{
+    string ping(1:string ping)
+    ModelResp movieModelRank(1: ModelReq req)
 }
