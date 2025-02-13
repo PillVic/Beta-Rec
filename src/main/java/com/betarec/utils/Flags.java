@@ -13,6 +13,7 @@ public class Flags {
     public static final String COMMON_FILE_PATH = "ml-latest/";
     public static Pattern YEAR_PATTERN = Pattern.compile("\\([0-9]{4}\\)");
     public static final String EMPTY_GENRES = "(no genres listed)";
+    public static final String LOCAL_SERVER = "localhost";
 
     public static boolean titleContainComma(String line) {
         return line.contains("\"");

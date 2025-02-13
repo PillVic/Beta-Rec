@@ -7,7 +7,7 @@ end
 desc '生成代码'
 task :gen => :clean do
   sh "thrift -gen java template/pojo.thrift"
-  #sh "thrift -gen java template/service.thrift"
+  sh "thrift -gen java template/service.thrift"
   sh "thrift -gen py template/service.thrift"
 end
 
