@@ -21,6 +21,7 @@ RATING_VALIDATE_DATA_SET = "./data-set/auto_rec_ratings_test_set.csv"
 USER_VECS_FILE_PATH = "./vecs/AUTO_REC_MLP_USER_VECS"
 MOVIE_VECS_FILE_PATH = "./vecs/AUTO_REC_MLP_MOVIE_VECS"
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 maxUserId = (
     pl.scan_csv("./user_rating_count.csv")
@@ -38,7 +39,7 @@ genresNum = (
     pl.scan_csv("./genres.csv").select(pl.col("genres")).collect()["genres"].count()
 )
 
-# super parameter
+# hyper parameter
 USER_MOVIE_VEC_LENGTH = genresNum * 5
 LINEAR_MODEL_NUM = 2
 
@@ -60,29 +61,24 @@ class TowerMlpModel(nn.Module):
             self.subUserModel.append(
                 nn.Sequential(
                     nn.Linear(userMovieVecLen, userMovieVecLen),
-                    nn.LeakyReLU(0.1),
                     nn.BatchNorm1d(userMovieVecLen),
+                    nn.LeakyReLU(0.1),
                 )
             )
             self.subMovieModel.append(
                 nn.Sequential(
                     nn.Linear(userMovieVecLen, userMovieVecLen),
-                    nn.LeakyReLU(0.1),
                     nn.BatchNorm1d(userMovieVecLen),
+                    nn.LeakyReLU(0.1),
                 )
             )
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def load(self, userModelPath, movieModelPath):
-        self.subUserModel.load_state_dict(
-            torch.load(userModelPath, map_location=self.device, weights_only=False)
-        )
-        self.subUserModel.to(self.device)
+        self.subUserModel.load_state_dict(torch.load(userModelPath, weights_only=True))
+        self.subUserModel.to(device)
 
-        self.subMovieModel.load_state_dict(
-            torch.load(movieModelPath, map_location=self.device, weights_only=False)
-        )
-        self.subMovieModel.to(self.device)
+        self.subMovieModel.load_state_dict(torch.load(movieModelPath, weights_only=True))
+        self.subMovieModel.to(device)
 
     def writeVecs(self, userVecsPath, movieVecsPath):
         self.subMovieModel.requires_grad_(False)
@@ -122,7 +118,7 @@ def validate(model, ques, ans, valNum):
 # 在colab没法保证一口气学完所有数据, 因此直接随机采样学更合理
 def train(model, ques, ans, valQues, valAns, batchSize=200, trainNum=200, valSize=300):
     criterion = nn.MSELoss()
-    adamOptimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    adamOptimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
     for i in range(trainNum):
         xs = torch.randint(0, ques.shape[0], (batchSize,))
         inputs = ques[xs]
@@ -139,8 +135,6 @@ def train(model, ques, ans, valQues, valAns, batchSize=200, trainNum=200, valSiz
                     i, trainNum, complectRate, batchSize, loss, valLoss
                 )
             )
-        if i % 10000 == 0:
-            model.save(userModelPath=USER_MODEL_PATH, movieModelPath=MOVIE_MODEL_PATH)
 
         adamOptimizer.zero_grad()
         loss.backward()
@@ -172,7 +166,6 @@ if __name__ == "__main__":
         movieNum=maxMovieId + 1,
         userMovieVecLen=USER_MOVIE_VEC_LENGTH,
     )
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     print(
